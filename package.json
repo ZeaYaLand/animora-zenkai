@@ -3,7 +3,7 @@
   "version": "2.0.0",
   "description": "ANIMORA — anime catalog and player with multi-source catalog, playback, favorites, and watch history.",
   "main": "animetv-local.js",
-  "homepage": "https://animora-sigma.vercel.app",
+  "homepage": "https://animora-zenkai.vercel.app",
   "repository": {
     "type": "git",
     "url": "https://github.com/ZeaYaLand/animora-zenkai.git"
