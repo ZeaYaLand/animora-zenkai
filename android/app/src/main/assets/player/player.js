@@ -4,7 +4,7 @@
   const params = new URLSearchParams(window.location.search);
   const sourceUrl = firstParam("src", "url", "videoUrl", "file");
   const castSourceUrl = firstParam("castSrc") || sourceUrl;
-  const title = firstParam("title", "name") || "ZenkaiTV Video";
+  const title = firstParam("title", "name") || "ANIMORA Video";
   const episode = firstParam("episode", "ep") || "";
   const poster = firstParam("poster", "thumb") || "";
   const subtitle = firstParam("subtitle", "sub") || "";
@@ -86,9 +86,9 @@
     floatingLabel: document.getElementById("floatingLabel")
   };
 
-  document.title = `${title}${episode ? ` - ${episode}` : ""} - ZenkaiTV`;
+  document.title = `${title}${episode ? ` - ${episode}` : ""} - ANIMORA`;
   elements.title.textContent = title;
-  elements.episode.textContent = episode || "ZenkaiTV";
+  elements.episode.textContent = episode || "ANIMORA";
   if (poster) {
     elements.backdrop.style.backgroundImage = `url("${cssUrl(poster)}")`;
   }
@@ -155,7 +155,7 @@
     const episodeSlot = document.getElementById("floatingEpisode");
     const titleSlot = document.getElementById("floatingTitle");
     if (episodeSlot) episodeSlot.textContent = shortEpisodeLabel();
-    if (titleSlot) titleSlot.textContent = title === "ZenkaiTV Video" ? "" : title;
+    if (titleSlot) titleSlot.textContent = title === "ANIMORA Video" ? "" : title;
 
     let isHidden = true;
     const apply = (hidden, persist) => {
@@ -1160,7 +1160,7 @@
     }
     try {
       const meta = new window.chrome.cast.media.GenericMediaMetadata();
-      meta.title = title || "ZenkaiTV";
+      meta.title = title || "ANIMORA";
       if (episode) meta.subtitle = String(episode);
       if (poster) meta.images = [new window.chrome.cast.Image(poster)];
       media.metadata = meta;
