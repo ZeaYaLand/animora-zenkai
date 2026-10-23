@@ -4,10 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="color-scheme" content="dark">
-  <title>ZenkaiTV Player</title>
+  <title>ANIMORA Player</title>
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
   <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
-  <link rel="stylesheet" href="/player/player.css?v=1024">
+  <link rel="stylesheet" href="/player/player.css?v=1025">
   <script defer src="https://cdn.jsdelivr.net/npm/artplayer@5.4.0/dist/artplayer.js"></script>
   <!-- HLS downloads in parallel but no longer blocks player.js from starting.
        waitForLibraries() already gates HLS streams until this is ready, while
@@ -18,7 +18,7 @@
        window.__onGCastApiAvailable at CLICK time and loaded the SDK then too, so
        cast state was unknowable until after the first press and every failure
        collapsed into one opaque callback. -->
-  <script defer src="/player/player.js?v=1024"></script>
+  <script defer src="/player/player.js?v=1025"></script>
 </head>
 <body>
   <main class="ztv-player-page">
@@ -29,7 +29,7 @@
          coordinates in both states, so nothing jumps when you toggle. -->
     <header class="ztv-player-topbar" id="playerTopbar">
       <div class="ztv-title-block">
-        <p class="ztv-kicker" id="episodeLabel">ZenkaiTV</p>
+        <p class="ztv-kicker" id="episodeLabel">ANIMORA</p>
         <h1 id="playerTitle">Video Player</h1>
       </div>
       <!-- Mascot lives in the empty middle of the bar. Purely decorative:
@@ -38,9 +38,9 @@
       <div class="ztv-mascot" id="ztvMascot" aria-hidden="true">
         <img class="ztv-mascot-frame" id="ztvMascotFrame" alt="" decoding="async">
       </div>
-      <div class="ztv-player-brand" aria-label="ZenkaiTV">
-        <img class="ztv-brand-wordmark" src="/logo-wordmark-480.webp" alt="ZenkaiTV">
-        <img class="ztv-brand-mark" src="/logo-mark-transparent.png" alt="" aria-hidden="true">
+      <div class="ztv-player-brand" aria-label="ANIMORA">
+        <span class="ztv-brand-wordmark">ANIMORA</span>
+        <img class="ztv-brand-mark" src="/animora-logo.svg" alt="" aria-hidden="true">
       </div>
     </header>
 
