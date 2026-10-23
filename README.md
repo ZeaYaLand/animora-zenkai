@@ -18,7 +18,7 @@
 
 <p align="center">
   <a href="https://github.com/JSolanoDev/AnimeTV/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/JSolanoDev/AnimeTV/actions/workflows/ci.yml/badge.svg"></a>
-  <a href="https://animora-zenkai.vercel.app"><img alt="Live site" src="https://img.shields.io/badge/live-zenkaitv.com-12b8c4?style=flat-square"></a>
+  <a href="https://animora-zenkai.vercel.app"><img alt="Live site" src="https://img.shields.io/badge/live-ANIMORA-12b8c4?style=flat-square"></a>
   <img alt="Node.js 20 or newer" src="https://img.shields.io/badge/Node.js-20%2B-339933?style=flat-square&logo=node.js&logoColor=white">
   <img alt="Web, Android, and TV" src="https://img.shields.io/badge/platform-Web%20%7C%20Android%20%7C%20TV-6750e8?style=flat-square">
   <a href="LICENSE"><img alt="MIT license" src="https://img.shields.io/badge/license-MIT-20242b?style=flat-square"></a>
