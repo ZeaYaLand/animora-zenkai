@@ -15,6 +15,7 @@ const files = [
   "styles.css",
   "update-manager.js",
   "manifest.webmanifest",
+  "animora-logo.svg",
   "homepage-bootstrap.json",
   "sources.json",
   "logo-mark.png",
