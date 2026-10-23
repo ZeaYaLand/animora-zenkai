@@ -1,15 +1,15 @@
 {
-  "name": "zenkaitv",
+  "name": "animora",
   "version": "2.0.0",
-  "description": "Modern anime TV app with multi-source catalogs, embedded playback, and Japanese audio plus Spanish subtitle preferences.",
+  "description": "ANIMORA — anime catalog and player with multi-source catalog, playback, favorites, and watch history.",
   "main": "animetv-local.js",
-  "homepage": "https://zenkaitv.com",
+  "homepage": "https://animora-sigma.vercel.app",
   "repository": {
     "type": "git",
-    "url": "https://github.com/JSolanoDev/AnimeTV.git"
+    "url": "https://github.com/ZeaYaLand/animora-zenkai.git"
   },
   "bugs": {
-    "url": "https://github.com/JSolanoDev/AnimeTV/issues"
+    "url": "https://github.com/ZeaYaLand/animora-zenkai/issues"
   },
   "scripts": {
     "start": "node animetv-local.js",
