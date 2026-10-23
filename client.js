@@ -20272,6 +20272,24 @@ async function runActivePlaybackAttempt(options = {}, playbackContext) {
       if (!isPlaybackAttemptCurrent(playbackContext, show, activeEpisode)) return;
     }
     if (!reliableSource) {
+      // Last-resort attempt for a known direct HLS source. Some HLS hosts respond
+      // correctly in the player but fail the short manifest/segment health probe
+      // (cold CDN, slow first fragment, or transient probe timeout). Keep the
+      // ad-free candidate policy; let the real player attempt playback and use
+      // its normal source-failure ladder if the stream is genuinely unavailable.
+      const unverifiedDirect = getEpisodePlaybackSources(activeEpisode)
+        .filter((source) => !activeEpisode._failedSourceIds?.has(source.id))
+        .filter(isAdFreeFallbackCandidate)
+        .find((source) => source.type === "direct" && isHlsSource(source));
+      if (unverifiedDirect) {
+        console.warn("[Playback] HLS health probe failed; trying the direct source in player.", {
+          provider: unverifiedDirect.provider || unverifiedDirect.label || "unknown"
+        });
+        selectEpisodePlaybackSource(activeEpisode, unverifiedDirect.id);
+        reliableSource = unverifiedDirect;
+      }
+    }
+    if (!reliableSource) {
       renderPlaybackError(frame, activeEpisode, {
         title: "Playback source unavailable",
         message: "No verified ad-free source responded for this episode. Retry to check AnimeAV1, TioAnime, and JKAnime again."
