@@ -190,7 +190,7 @@ async function animeGoSources(id){
      const embed=urlSafe(item.url);if(!embed)continue;
      const provider=String(item.provider||"AnimeGO");
      const label=String(item.label||"Русская озвучка").trim();
-     if(/субтитр|subtitles?\b|\(sub\)/i.test(label))continue;
+     if(/субтитр|subtitles?\b|\bsub\b|\(sub\)/i.test(label))continue;
      const normalized=source({url:embed,kind:"iframe",label:"AnimeGO · "+label+" · "+provider,provider,language:"ru"},0,"AnimeGO");
      if(normalized)out.push(normalized);
     }
