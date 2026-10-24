@@ -117,12 +117,54 @@ async function aniLibertySources(id){
  }
  return dedupe(out);
 }
+async function animeVostSources(id){
+ const title=p.get("title")||p.get("name")||id.slug;
+ const queries=[title,id.slug].filter((v,i,a)=>v&&a.indexOf(v)===i),out=[];
+ const wanted=titleKey(title),slugKey=titleKey(id.slug);
+ const score=row=>{
+  const names=releaseNames(row).map(titleKey).filter(Boolean);
+  return (names.some(n=>n===wanted)?6:0)+(names.some(n=>n===slugKey)?5:0)
+   +(names.some(n=>n.length>3&&wanted.length>3&&(n.includes(wanted)||wanted.includes(n)))?2:0)
+   +(names.some(n=>n.length>3&&slugKey.length>3&&(n.includes(slugKey)||slugKey.includes(n)))?1:0);
+ };
+ const seen=new Set();
+ for(const query of queries){
+  try{
+   const search=new URL("/api/animevost/search",location.origin);
+   search.searchParams.set("query",query);
+   const response=await fetch(search.href,{headers:{Accept:"application/json"},credentials:"same-origin",cache:"no-store"});
+   if(!response.ok)continue;
+   const rows=apiRows(await response.json()).sort((a,b)=>score(b)-score(a));
+   for(const row of rows.filter(x=>score(x)>=2).slice(0,5)){
+    const titleId=String(row.id??row.anime_id??row.animeId??"").trim();
+    if(!/^\d{1,12}$/.test(titleId)||seen.has(titleId))continue;
+    seen.add(titleId);
+    const playlistUrl=new URL("/api/animevost/playlist",location.origin);
+    playlistUrl.searchParams.set("id",titleId);
+    const pr=await fetch(playlistUrl.href,{headers:{Accept:"application/json"},credentials:"same-origin",cache:"no-store"});
+    if(!pr.ok)continue;
+    const items=apiRows(await pr.json());
+    for(const item of items){
+     const name=String(item?.name||item?.title||"");
+     const match=name.match(/^\s*(\d{1,4})(?:\D|$)/);
+     if(!match||Number(match[1])!==Number(id.ep))continue;
+     const raw=String(item?.hd||item?.url||item?.videoUrl||"").trim();
+     let parsed;try{parsed=new URL(raw)}catch(_){continue}
+     if(!/^https?:$/.test(parsed.protocol)||!(/\.m3u8(?:$|[?#])|\.mp4(?:$|[?#])/i.test(parsed.href)))continue;
+     const normalized=source({url:parsed.href,type:/\.m3u8(?:$|[?#])/i.test(parsed.href)?"hls":"mp4",label:"AnimeVost · русская озвучка",provider:"AnimeVost",language:"ru"},0,"AnimeVost");
+     if(normalized)out.push(normalized);
+    }
+   }
+  }catch(e){console.warn("[ANIMORA Player] AnimeVost lookup failed",e)}
+ }
+ return dedupe(out);
+}
 async function apiSources(){
  // Playback is restricted to the Russian-language AniLiberty source.
  // Legacy URL parameters cannot enable a foreign provider.
  const id=identity();
  if(!id)return[];
- try{return dedupe(await aniLibertySources(id))}
+ try{return dedupe([...(await aniLibertySources(id)),...(await animeVostSources(id))])}
  catch(e){console.warn("[ANIMORA Player] Russian source lookup failed",e);return[]}
 }
 function loading(text,title){$("loading").hidden=false;$("error").hidden=true;$("loadingText").textContent=text||"Проверяем доступность видео";$("loadingTitle").textContent=title||"Подключаем источник…"}
