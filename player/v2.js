@@ -46,9 +46,15 @@
     }).filter(Boolean);
   }
   function getEpisodeIdentity() {
-    const slug = params.get("slug") || params.get("anime") || params.get("animeId") || params.get("id");
+    // `id` and `animeId` are often numeric AniList/MAL identifiers, not provider slugs.
+    // Sending those to /api/*/sources silently requests a nonexistent episode. Prefer
+    // explicit provider-friendly slug/anime values and only accept ID fallbacks when
+    // they are non-numeric. Direct source URLs passed by the existing catalog still work.
+    const explicitSlug = params.get("slug") || params.get("anime");
+    const idFallback = params.get("animeId") || params.get("id");
+    const slug = explicitSlug || (idFallback && !/^\\d+$/.test(idFallback.trim()) ? idFallback : "");
     const episode = params.get("episode") || params.get("ep") || params.get("episodeNumber");
-    return slug && episode ? { slug, episode } : null;
+    return slug && episode ? { slug: slug.trim(), episode: episode.trim() } : null;
   }
   async function loadSourcesFromExistingApis() {
     const identity = getEpisodeIdentity();
