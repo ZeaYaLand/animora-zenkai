@@ -36,3 +36,10 @@ test("AnimeGO proxy limits results to recognized embed providers", () => {
 test("player page busts the old cached JavaScript", () => {
   assert.ok(page.includes("/player/v2.js?v=13"));
 });
+
+test("AnimeGO search supports cards without title attributes and normalizes embed URLs", () => {
+  assert.ok(animeGo.includes('class="(?:ani-grid__item|[^"]*\\sani-grid__item)(?:\\s[^"]*)?"'));
+  assert.ok(animeGo.includes('ani-grid__item-title'));
+  assert.ok(animeGo.includes('new URL(u, BASE)'));
+  assert.ok(animeGo.includes('title:decode(title[1].replace(/<[^>]*>/g, "").trim())'));
+});
