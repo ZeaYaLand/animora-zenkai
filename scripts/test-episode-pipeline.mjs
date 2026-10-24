@@ -3587,7 +3587,7 @@ test("startup: direct watch links warm player assets before asynchronous source 
 test("startup: the player and native fallback use the same pinned playback libraries", () => {
   const artplayer = "https://cdn.jsdelivr.net/npm/artplayer@5.4.0/dist/artplayer.js";
   const hls = "https://cdn.jsdelivr.net/npm/hls.js@1.6.16/dist/hls.min.js";
-  const html = readFileSync(new URL("../player/player.html", import.meta.url), "utf8");
+  const html = readFileSync(new URL("../player/v2-engine.html", import.meta.url), "utf8");
   const prefetch = section(clientSource, "function prefetchPlayerShell(", "function warmAnimeAv1PlaybackIntent(");
   assert.ok(html.includes(artplayer) && prefetch.includes(artplayer));
   assert.ok(html.includes(hls) && prefetch.includes(hls));
