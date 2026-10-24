@@ -7,9 +7,10 @@ function parse(raw){try{const x=JSON.parse(raw||"[]");return Array.isArray(x)?x:
 function source(item,i,provider){
  if(typeof item==="string")item={url:item};if(!item||typeof item!=="object")return null;
  const embed=url(item.iframeUrl||item.embedUrl||"");
- const u=url(item.videoUrl||item.url||item.src||item.href||item.externalUrl||embed);if(!u)return null;
+ const direct=item.videoUrl||item.url||item.src||item.href||item.externalUrl||"";
+ const u=url(direct||embed);if(!u)return null;
  const type=String(item.type||item.format||(String(item.provider||"").toUpperCase()==="HLS"?"hls":"")).toLowerCase();
- const kind=String(item.kind||item.mode||(embed||/iframe|embed/i.test(type)?"iframe":"")).toLowerCase();
+ const kind=String(item.kind||item.mode||(!direct&&embed||/iframe|embed/i.test(type)?"iframe":"")).toLowerCase();
  return {url:u,type,kind,label:String(item.label||item.name||item.provider||provider||("Источник "+(i+1))),poster:url(item.poster||item.thumbnail||p.get("poster")||"")};
 }
 function dedupe(list){const seen=new Set();return list.filter(Boolean).filter(s=>!seen.has(s.url)&&seen.add(s.url))}
