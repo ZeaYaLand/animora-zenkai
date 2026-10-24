@@ -89,6 +89,14 @@ test("AnimeGO player route returns recognized Russian-language embed providers",
   assert.equal(result.body.players[0].kind, "iframe");
 });
 
+
+test("AnimeGO player route excludes subtitle-only variants and unknown foreign providers", async () => {
+  const html = '<button data-player="//kodikplayer.com/seria/sub" data-translation-title="AniLibria.Subtitles" data-provider-title="Kodik"></button><button data-player="//foreign.example/player/1" data-translation-title="Dub" data-provider-title="Foreign"></button>';
+  const result = await callAnimeGo({ path: ["players"], id: "2239", episode: "1" }, async () => response({ data: { content: html } }));
+  assert.equal(result.status, 200);
+  assert.deepEqual(result.body.players, []);
+});
+
 test("AnimeGO player route resolves episodes after the first", async () => {
   const episodeList = { data: { content: '<div data-episode="555" data-episode-number="2">2</div>' } };
   const playerData = { data: { content: '<div id="provider"><button data-player="//video.sibnet.ru/shell.php?videoid=123" data-translation-title="AniDUB" data-provider-title="Sibnet" data-ptranslation="2"></button></div>' } };
