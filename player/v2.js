@@ -117,60 +117,12 @@ async function aniLibertySources(id){
  }
  return dedupe(out);
 }
-async function aniLibriaLegacySources(id){
- // Secondary Russian-language catalog/player API. Only absolute media URLs
- // explicitly returned by the API are eligible; relative paths are not guessed.
- const title=p.get("title")||p.get("name")||id.slug;
- const queries=[title,id.slug].filter((v,i,a)=>v&&a.indexOf(v)===i);
- const out=[],seenTitles=new Set();
- for(const query of queries){
-  try{
-   const search=new URL("/api/anilibria/title/search",location.origin);
-   search.searchParams.set("search",query);search.searchParams.set("limit","20");
-   const response=await fetch(search.href,{headers:{Accept:"application/json"},credentials:"same-origin",cache:"no-store"});
-   if(!response.ok)continue;
-   const payload=await response.json(),rows=apiRows(payload);
-   const wanted=titleKey(title),slugKey=titleKey(id.slug);
-   const score=row=>{
-    const names=releaseNames(row).map(titleKey).filter(Boolean);
-    return (names.some(n=>n===wanted)?6:0)+(names.some(n=>n===slugKey)?5:0)
-     +(names.some(n=>n.length>3&&wanted.length>3&&(n.includes(wanted)||wanted.includes(n)))?2:0)
-     +(names.some(n=>n.length>3&&slugKey.length>3&&(n.includes(slugKey)||slugKey.includes(n)))?1:0);
-   };
-   rows.sort((a,b)=>score(b)-score(a));
-   for(const row of rows.filter(x=>score(x)>=2).slice(0,8)){
-    const code=String(row.code||row.alias||"").trim(),idValue=String(row.id||"").trim();
-    const key=code||idValue;if(!key||seenTitles.has(key))continue;seenTitles.add(key);
-    let release=row;
-    try{
-     const detail=new URL("/api/anilibria/title",location.origin);
-     if(code)detail.searchParams.set("code",code);else detail.searchParams.set("id",idValue);
-     const dr=await fetch(detail.href,{headers:{Accept:"application/json"},credentials:"same-origin",cache:"no-store"});
-     if(dr.ok){const dp=await dr.json();release=dp?.data?.title||dp?.title||dp?.data||dp}
-    }catch(_){}
-    const player=release?.player||row?.player;
-    if(!player||typeof player!=="object")continue;
-    const nodes=matchingEpisodeNodes(player,Number(id.ep));
-    const voiceRaw=[release?.team?.voice,release?.team?.voices,row?.team?.voice,row?.team?.voices].flatMap(v=>Array.isArray(v)?v:v?[v]:[]);
-    const team=[...new Set(voiceRaw.map(v=>typeof v==="string"?v:v?.name||v?.nickname||v?.title||"").filter(Boolean))].slice(0,5).join(", ");
-    if(!team)continue;
-    for(const node of nodes){
-     for(const item of mediaUrls(node)){
-      const normalized=source({...item,label:"AniLibria · "+team+(item.label?" · "+item.label:""),provider:"AniLibria",voice:team,language:"ru"},0,"AniLibria");
-      if(normalized)out.push(normalized);
-     }
-    }
-   }
-  }catch(e){console.warn("[ANIMORA Player] AniLibria API lookup failed",e)}
- }
- return dedupe(out);
-}
 async function apiSources(){
  // Playback is restricted to the Russian-language AniLiberty source.
  // Legacy URL parameters cannot enable a foreign provider.
  const id=identity();
  if(!id)return[];
- try{return dedupe([...(await aniLibertySources(id)),...(await aniLibriaLegacySources(id))])}
+ try{return dedupe(await aniLibertySources(id))}
  catch(e){console.warn("[ANIMORA Player] Russian source lookup failed",e);return[]}
 }
 function loading(text,title){$("loading").hidden=false;$("error").hidden=true;$("loadingText").textContent=text||"Проверяем доступность видео";$("loadingTitle").textContent=title||"Подключаем источник…"}
