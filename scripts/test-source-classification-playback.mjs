@@ -45,3 +45,29 @@ test("ordinary direct media remains eligible", () => {
     videoUrl: "https://cdn.example.test/episode.m3u8"
   }), false);
 });
+
+
+test("only Russian AniLiberty/Anilibria sources are eligible for the catalog source picker", () => {
+  assert.equal(classification.isRussianCatalogSource({
+    id: "aniliberty-hls",
+    provider: "AniLiberty",
+    label: "AniLiberty · Русская озвучка",
+    language: "ru",
+    type: "direct",
+    videoUrl: "https://cdn.example.test/episode.m3u8"
+  }), true);
+  assert.equal(classification.isRussianCatalogSource({
+    id: "animeav1-hls",
+    provider: "AnimeAV1",
+    label: "AnimeAV1",
+    language: "sub",
+    type: "direct",
+    videoUrl: "https://cdn.example.test/episode.m3u8"
+  }), false);
+  assert.equal(classification.isRussianCatalogSource({
+    id: "generic-hls",
+    provider: "HLS",
+    type: "direct",
+    videoUrl: "https://cdn.example.test/episode.m3u8"
+  }), false);
+});
