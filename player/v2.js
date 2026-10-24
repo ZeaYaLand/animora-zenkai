@@ -1,154 +1,58 @@
 (function () {
-  "use strict";
-  const params = new URLSearchParams(location.search);
-  const $ = (id) => document.getElementById(id);
-  const video = $("video"), embed = $("embed"), loading = $("loading"), errorBox = $("error");
-  const sourceSelect = $("sourceSelect");
-  let hls = null, sources = [], activeIndex = -1, attemptToken = 0;
-  const safeUrl = (raw) => {
-    try { const u = new URL(String(raw || ""), location.href); return /^(https?:)$/.test(u.protocol) ? u.href : ""; }
-    catch { return ""; }
-  };
-  function normaliseSource(item, index) {
-    if (typeof item === "string") item = { url: item };
-    if (!item || typeof item !== "object") return null;
-    const url = safeUrl(item.videoUrl || item.url || item.src || item.href || item.externalUrl);
-    if (!url) return null;
-    const type = String(item.type || item.format || "").toLowerCase();
-    return { url, type, label: String(item.label || item.name || item.provider || ("Источник " + (index + 1))), kind: String(item.kind || item.mode || "").toLowerCase() };
-  }
-  function getSources() {
-    const all = [];
-    const direct = params.get("src") || params.get("url") || params.get("videoUrl") || params.get("file");
-    if (direct) all.push({ url: direct, label: params.get("provider") || "Основной источник", type: params.get("type") || "" });
-    for (const key of ["sources", "fallbacks", "alternatives"]) {
-      const raw = params.get(key);
-      if (!raw) continue;
-      try { const parsed = JSON.parse(raw); if (Array.isArray(parsed)) all.push(...parsed); } catch (e) { console.warn("[ANIMORA Player 2] Invalid " + key + " parameter"); }
-    }
-    return dedupeSources(all);
-  }
-  function dedupeSources(items) {
-    const seen = new Set();
-    return items.map(normaliseSource).filter(Boolean).filter(s => { if (seen.has(s.url)) return false; seen.add(s.url); return true; });
-  }
-  function collectApiSources(payload, providerName) {
-    if (!payload || typeof payload !== "object") return [];
-    const rows = Array.isArray(payload.sources) ? payload.sources : Array.isArray(payload.data) ? payload.data : Array.isArray(payload.results) ? payload.results : [];
-    return rows.map((item, index) => {
-      if (typeof item === "string") return { url: item, provider: providerName, label: providerName + " · " + (index + 1) };
-      const copy = { ...item };
-      copy.url = copy.videoUrl || copy.url || copy.src || copy.href || copy.externalUrl || copy.iframeUrl || copy.embedUrl;
-      copy.type = copy.type || copy.format || (copy.provider === "HLS" ? "hls" : "");
-      copy.kind = copy.kind || copy.mode || (copy.iframeUrl || copy.embedUrl ? "iframe" : "");
-      copy.label = copy.label || copy.name || copy.provider || (providerName + " · " + (index + 1));
-      return copy;
-    }).filter(Boolean);
-  }
-  function getEpisodeIdentity() {
-    // `id` and `animeId` are often numeric AniList/MAL identifiers, not provider slugs.
-    // Sending those to /api/*/sources silently requests a nonexistent episode. Prefer
-    // explicit provider-friendly slug/anime values and only accept ID fallbacks when
-    // they are non-numeric. Direct source URLs passed by the existing catalog still work.
-    const explicitSlug = params.get("slug") || params.get("anime");
-    const idFallback = params.get("animeId") || params.get("id");
-    const slug = explicitSlug || (idFallback && !/^\d+$/.test(idFallback.trim()) ? idFallback : "");
-    const episode = params.get("episode") || params.get("ep") || params.get("episodeNumber");
-    return slug && episode ? { slug: slug.trim(), episode: episode.trim() } : null;
-  }
-  async function loadSourcesFromExistingApis() {
-    const identity = getEpisodeIdentity();
-    if (!identity) return [];
-    const requested = (params.get("api") || params.get("sourceApi") || "").toLowerCase();
-    const providers = requested ? [requested] : ["animeav1", "tioanime"];
-    const collected = [];
-    for (const provider of providers) {
-      if (!/^[a-z0-9-]+$/.test(provider)) continue;
-      const endpoint = new URL("/api/" + provider + "/sources", location.origin);
-      endpoint.searchParams.set("slug", identity.slug);
-      endpoint.searchParams.set("episode", identity.episode);
-      if (params.get("variant")) endpoint.searchParams.set("variant", params.get("variant"));
-      try {
-        const response = await fetch(endpoint.href, { headers: { Accept: "application/json" }, credentials: "same-origin" });
-        if (!response.ok) { console.warn("[ANIMORA Player 2] Provider unavailable:", provider, response.status); continue; }
-        const payload = await response.json();
-        collected.push(...collectApiSources(payload, provider));
-        if (payload && payload.ok && collected.length && requested) break;
-      } catch (error) { console.warn("[ANIMORA Player 2] Source API request failed:", provider, error); }
-    }
-    return dedupeSources(collected);
-  }
-  function setLoading(message) { loading.hidden = false; errorBox.hidden = true; $("loadingText").textContent = message || "Проверяем доступность видео"; }
-  function clearMedia() {
-    if (hls) { try { hls.destroy(); } catch (e) {} hls = null; }
-    video.pause(); video.removeAttribute("src"); video.load(); embed.removeAttribute("src");
-    video.hidden = false; embed.hidden = true;
-  }
-  function showError(message) { loading.hidden = true; errorBox.hidden = false; $("errorText").textContent = message; }
-  function isHls(s) { return /\.m3u8(?:$|[?#])/i.test(s.url) || /hls|mpegurl|m3u8/.test(s.type); }
-  function isEmbed(s) { return /iframe|embed/.test(s.kind) || /\/embed\/|\/player\/|\.html(?:$|[?#])/i.test(s.url); }
-  async function playAt(index, token) {
-    if (token !== attemptToken) return;
-    if (index >= sources.length) { showError("Все переданные источники не удалось запустить. Это может быть ограничение источника, CORS или недоступность видеосегментов."); return; }
-    activeIndex = index; sourceSelect.value = String(index);
-    const s = sources[index]; clearMedia(); setLoading("Источник: " + s.label);
-    if (isEmbed(s)) {
-      video.hidden = true; embed.hidden = false;
-      embed.onload = () => { if (token === attemptToken) loading.hidden = true; };
-      embed.onerror = () => { if (token === attemptToken) playAt(index + 1, token); };
-      embed.src = s.url;
-      window.setTimeout(() => { if (token === attemptToken && !loading.hidden) { loading.hidden = true; } }, 10000);
-      return;
-    }
-    if (isHls(s) && window.Hls && Hls.isSupported()) {
-      let networkRetries = 0;
-      hls = new Hls({ enableWorker: true, lowLatencyMode: false, manifestLoadingTimeOut: 15000, fragLoadingTimeOut: 20000, manifestLoadingMaxRetry: 1, fragLoadingMaxRetry: 1 });
-      hls.on(Hls.Events.MANIFEST_PARSED, () => { if (token !== attemptToken) return; loading.hidden = true; video.play().catch(() => {}); });
-      hls.on(Hls.Events.ERROR, (_event, data) => {
-        if (token !== attemptToken || !data || !data.fatal) return;
-        console.warn("[ANIMORA Player 2] HLS fatal error", data.type, data.details);
-        if (data.type === Hls.ErrorTypes.NETWORK_ERROR && hls && networkRetries < 2) {
-          networkRetries += 1;
-          hls.startLoad();
-        } else if (data.type === Hls.ErrorTypes.MEDIA_ERROR && hls) {
-          hls.recoverMediaError();
-        } else {
-          // Do not get stuck retrying a broken manifest or missing segments forever.
-          playAt(index + 1, token);
-        }
-      });
-      hls.loadSource(s.url); hls.attachMedia(video); return;
-    }
-    if (isHls(s) && !video.canPlayType("application/vnd.apple.mpegurl")) { playAt(index + 1, token); return; }
-    video.src = s.url;
-    const onReady = () => { cleanup(); if (token !== attemptToken) return; loading.hidden = true; video.play().catch(() => {}); };
-    const onFailure = () => { cleanup(); if (token === attemptToken) playAt(index + 1, token); };
-    const cleanup = () => { video.removeEventListener("canplay", onReady); video.removeEventListener("error", onFailure); };
-    video.addEventListener("canplay", onReady, { once: true }); video.addEventListener("error", onFailure, { once: true }); video.load();
-  }
-  function start(index) { attemptToken++; playAt(Math.max(0, index), attemptToken); }
-  $("title").textContent = params.get("title") || params.get("name") || "Просмотр аниме";
-  $("episode").textContent = params.get("episode") ? "Серия " + params.get("episode") : "";
-  $("back").addEventListener("click", () => { if (history.length > 1) history.back(); else location.href = "/"; });
-  $("retry").addEventListener("click", () => start(Math.max(0, activeIndex)));
-  sourceSelect.addEventListener("change", () => start(Number(sourceSelect.value)));
-  video.addEventListener("waiting", () => { if (!video.hidden) setLoading("Буферизация видео…"); });
-  video.addEventListener("playing", () => { loading.hidden = true; errorBox.hidden = true; });
-  video.addEventListener("error", () => { if (activeIndex >= 0 && !video.hidden) start(activeIndex + 1); });
-  async function initialise() {
-    sources = getSources();
-    if (!sources.length) {
-      setLoading("Запрашиваем источники серии у ANIMORA…");
-      sources = await loadSourcesFromExistingApis();
-    }
-    sourceSelect.replaceChildren();
-    sources.forEach((s, i) => { const option = document.createElement("option"); option.value = String(i); option.textContent = s.label; sourceSelect.appendChild(option); });
-    sourceSelect.disabled = sources.length < 2;
-    if (!sources.length) {
-      showError("Не удалось получить источники. Проверьте параметры адреса: slug и episode. Также API источников может быть недоступно для этой серии.");
-      return;
-    }
-    start(0);
-  }
-  initialise().catch(error => { console.error("[ANIMORA Player 2] Initialisation failed", error); showError("Ошибка загрузки источников серии."); });
+"use strict";
+const $=id=>document.getElementById(id), p=new URLSearchParams(location.search);
+let sources=[],active=-1,frame=$("engineFrame"),attempt=0,lastError=0;
+function url(raw){try{const u=new URL(String(raw||"").trim(),location.href);return /^https?:$/.test(u.protocol)?u.href:""}catch(_){return""}}
+function parse(raw){try{const x=JSON.parse(raw||"[]");return Array.isArray(x)?x:x&&typeof x==="object"?[x]:[]}catch(_){return[]}}
+function source(item,i,provider){
+ if(typeof item==="string")item={url:item};if(!item||typeof item!=="object")return null;
+ const embed=url(item.iframeUrl||item.embedUrl||"");
+ const u=url(item.videoUrl||item.url||item.src||item.href||item.externalUrl||embed);if(!u)return null;
+ const type=String(item.type||item.format||(String(item.provider||"").toUpperCase()==="HLS"?"hls":"")).toLowerCase();
+ const kind=String(item.kind||item.mode||(embed||/iframe|embed/i.test(type)?"iframe":"")).toLowerCase();
+ return {url:u,type,kind,label:String(item.label||item.name||item.provider||provider||("Источник "+(i+1))),poster:url(item.poster||item.thumbnail||p.get("poster")||"")};
+}
+function dedupe(list){const seen=new Set();return list.filter(Boolean).filter(s=>!seen.has(s.url)&&seen.add(s.url))}
+function directSources(){const out=[],direct=p.get("src")||p.get("url")||p.get("videoUrl")||p.get("file");if(direct)out.push(source({url:direct,type:p.get("type"),label:p.get("provider")||"Переданный источник"},0));for(const k of ["sources","fallbacks","alternatives"])for(const x of parse(p.get(k)))out.push(source(x,out.length));return dedupe(out)}
+function identity(){const explicit=p.get("slug")||p.get("anime")||p.get("animeSlug"),id=p.get("animeId")||p.get("id"),slug=explicit||(id&&!/^\d+$/.test(id.trim())?id:""),ep=p.get("episode")||p.get("ep")||p.get("episodeNumber");return slug&&ep?{slug:slug.trim(),ep:ep.trim()}:null}
+async function apiSources(){
+ const id=identity();if(!id)return[];const asked=(p.get("api")||p.get("sourceApi")||"").toLowerCase(),providers=asked?[asked]:["animeav1","tioanime"],out=[];
+ for(const provider of providers){if(!/^[a-z0-9-]+$/.test(provider))continue;const endpoint=new URL("/api/"+provider+"/sources",location.origin);endpoint.searchParams.set("slug",id.slug);endpoint.searchParams.set("episode",id.ep);if(p.get("variant"))endpoint.searchParams.set("variant",p.get("variant"));if(p.get("refresh"))endpoint.searchParams.set("refresh",p.get("refresh"));
+  try{const r=await fetch(endpoint.href,{headers:{Accept:"application/json"},credentials:"same-origin",cache:"no-store"});if(!r.ok){console.warn("[ANIMORA Player] "+provider+" returned HTTP "+r.status);continue}const data=await r.json(),rows=Array.isArray(data.sources)?data.sources:Array.isArray(data.data)?data.data:Array.isArray(data.results)?data.results:[];out.push(...rows.map((x,i)=>source(x,i,provider)));if(asked&&data.ok&&out.length)break}catch(e){console.warn("[ANIMORA Player] API failed:",provider,e)}
+ }
+ return dedupe(out);
+}
+function loading(text,title){$("loading").hidden=false;$("error").hidden=true;$("loadingText").textContent=text||"Проверяем доступность видео";$("loadingTitle").textContent=title||"Подключаем источник…"}
+function error(text){$("loading").hidden=true;$("error").hidden=false;$("errorText").textContent=text}
+function isEmbed(s){return /iframe|embed/i.test(s.kind)||/\/embed\/|\/player\/|\.html(?:$|[?#])/i.test(s.url)}
+function engineUrl(s){const u=new URL("/player/v2-engine.html",location.origin);u.searchParams.set("src",s.url);u.searchParams.set("title",p.get("title")||p.get("name")||"Просмотр аниме");u.searchParams.set("episode",p.get("episode")||p.get("ep")||"");u.searchParams.set("type",s.type||(/\.m3u8(?:$|[?#])/i.test(s.url)?"m3u8":""));u.searchParams.set("sources",String(sources.length));if(s.poster)u.searchParams.set("poster",s.poster);for(const k of ["subtitle","tracks","returnTo","hasNext","start","fit"])if(p.get(k))u.searchParams.set(k,p.get(k));return u.href}
+function start(index){
+ if(!sources.length)return;active=Math.max(0,Math.min(index,sources.length-1));const my=++attempt,s=sources[active];$("sourceSelect").value=String(active);
+ loading("Источник "+(active+1)+" из "+sources.length+": "+s.label,isEmbed(s)?"Открываем внешний плеер…":"Запускаем видеоплеер…");
+ const old=frame,next=old.cloneNode(false);next.id="engineFrame";old.replaceWith(next);frame=next;
+ const embed=$("embedFrame");embed.hidden=true;embed.removeAttribute("src");frame.hidden=isEmbed(s);
+ if(isEmbed(s)){embed.hidden=false;embed.src=s.url;$("loading").hidden=true;return}
+ frame.src=engineUrl(s);
+ window.setTimeout(()=>{if(my!==attempt||$("error").hidden===false)return;if(!$("loading").hidden)fail("Плеер не подтвердил запуск за отведённое время.")},16000);
+}
+function fail(reason){
+ const now=Date.now();if(now-lastError<700)return;lastError=now;
+ if(active>=0&&active+1<sources.length){console.warn("[ANIMORA Player] source failed, trying fallback:",reason);start(active+1)}
+ else error("Источник не запустился. "+(sources.length>1?"Выберите другой источник в списке.":"Для этой серии не найден другой доступный источник."));
+}
+function fillSelect(){const sel=$("sourceSelect");sel.replaceChildren();sources.forEach((s,i)=>{const o=document.createElement("option");o.value=String(i);o.textContent=s.label;sel.appendChild(o)});sel.disabled=sources.length<2}
+window.addEventListener("message",ev=>{
+ if(ev.origin!==location.origin||ev.source!==frame.contentWindow)return;
+ let m=ev.data;if(typeof m==="string"){try{m=JSON.parse(m)}catch(_){return}}if(!m||!m.vcmd)return;
+ if(["play","playing","ready","progress"].includes(m.vcmd)){$("loading").hidden=true;$("error").hidden=true;return}
+ if(m.vcmd==="error")fail(m.val||"ошибка воспроизведения");
+ if(m.vcmd==="back"){const ret=p.get("returnTo");location.href=ret&&ret.startsWith("/")&&!ret.startsWith("//")?ret:"/";}
+});
+$("title").textContent=p.get("title")||p.get("name")||"Просмотр аниме";
+const ep=p.get("episode")||p.get("ep");$("episode").textContent=ep?"Серия "+ep:"";
+$("back").addEventListener("click",()=>{const ret=p.get("returnTo");if(ret&&ret.startsWith("/")&&!ret.startsWith("//"))location.href=ret;else if(history.length>1)history.back();else location.href="/"});
+$("retry").addEventListener("click",()=>start(Math.max(0,active)));
+$("sourceSelect").addEventListener("change",()=>start(Number($("sourceSelect").value)));
+async function initialise(){loading("Получаем список источников серии…");sources=directSources();if(!sources.length)sources=await apiSources();fillSelect();if(!sources.length){error("ANIMORA не получила источники серии. Проверьте slug, номер серии и доступность API источников.");$("diagnostic").hidden=false;$("diagnostic").textContent="Проверены API animeav1 и tioanime. Если они возвращают 403 или пустой список, плееру неоткуда получить видеопоток.";return}start(0)}
+initialise().catch(e=>{console.error("[ANIMORA Player] init failed",e);error("Ошибка при получении источников. Нажмите «Повторить источник».")});
 })();
