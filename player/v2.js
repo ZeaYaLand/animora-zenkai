@@ -152,8 +152,8 @@ async function animeVostSources(id){
      for(const [quality,value] of candidates){
       const raw=String(value||"").trim();
       let parsed;try{parsed=new URL(raw)}catch(_){continue}
-      if(!/^https?:$/.test(parsed.protocol)||!(/\\.m3u8(?:$|[?#])|\\.mp4(?:$|[?#])/i.test(parsed.href)))continue;
-      const ext=/\\.m3u8(?:$|[?#])/i.test(parsed.href)?"hls":"mp4";
+      if(!/^https?:$/.test(parsed.protocol)||!(/\.m3u8(?:$|[?#])|\.mp4(?:$|[?#])/i.test(parsed.href)))continue;
+      const ext=/\.m3u8(?:$|[?#])/i.test(parsed.href)?"hls":"mp4";
       const normalized=source({url:parsed.href,type:ext,label:"AnimeVost · русская озвучка"+(quality==="hd"?" · HD":quality==="sd"?" · SD":""),provider:"AnimeVost",language:"ru"},0,"AnimeVost");
       if(normalized)out.push(normalized);
      }
