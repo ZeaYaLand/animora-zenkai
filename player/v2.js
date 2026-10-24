@@ -70,11 +70,15 @@ async function aniLibertySources(id){
    if(!sr.ok)continue;const searchPayload=await sr.json(),rows=apiRows(searchPayload);
    if(!rows.length)continue;
    const wanted=titleKey(title),slugKey=titleKey(id.slug);
-   rows.sort((a,b)=>{
-    const score=x=>{const names=releaseNames(x).map(titleKey);return (names.some(n=>n===wanted)?6:0)+(names.some(n=>n===slugKey)?5:0)+(names.some(n=>n.includes(wanted)||wanted.includes(n))?2:0)};
-    return score(b)-score(a);
-   });
-   for(const row of rows.slice(0,30)){
+   const score=x=>{
+    const names=releaseNames(x).map(titleKey).filter(Boolean);
+    return (names.some(n=>n===wanted)?6:0)+(names.some(n=>n===slugKey)?5:0)
+     +(names.some(n=>n.length>3&&wanted.length>3&&(n.includes(wanted)||wanted.includes(n))?true:false)?2:0)
+     +(names.some(n=>n.length>3&&slugKey.length>3&&(n.includes(slugKey)||slugKey.includes(n))?true:false)?1:0);
+   };
+   rows.sort((a,b)=>score(b)-score(a));
+   const relevant=rows.filter(row=>score(row)>=2).slice(0,30);
+   for(const row of relevant){
     const alias=row.alias||row.code||row.slug||row.id||row.releaseId||row.release_id;
     if(alias==null)continue;
     let release=row;
