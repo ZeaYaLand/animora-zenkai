@@ -38,12 +38,23 @@ function isBlockedPlaybackUrl(value = "") {
 
 function isBlockedPlaybackSource(source = {}) {
   const urls = [source.videoUrl, source.externalUrl, source.url, source.href].filter(Boolean);
+  const hasLocalMediaRelay = urls.some((value) => isLocalSourceProxyUrl(value));
+
+  // A relayed URL is the actual playback target. Resolver metadata can still
+  // retain the upstream host (for example player.zilla-networks.com) even after
+  // its media URL has been rewritten to /api/source. Do not reject that valid
+  // same-origin relay just because the diagnostic/provider metadata remembers
+  // the original host. Direct upstream URLs remain blocked below.
   const identitySource = {
     ...source,
     videoUrl: isLocalSourceProxyUrl(source.videoUrl) ? "" : source.videoUrl,
     externalUrl: isLocalSourceProxyUrl(source.externalUrl) ? "" : source.externalUrl,
     url: isLocalSourceProxyUrl(source.url) ? "" : source.url,
-    href: isLocalSourceProxyUrl(source.href) ? "" : source.href
+    href: isLocalSourceProxyUrl(source.href) ? "" : source.href,
+    siteUrl: hasLocalMediaRelay && isBlockedPlaybackUrl(source.siteUrl) ? "" : source.siteUrl,
+    streamResolver: hasLocalMediaRelay && isBlockedPlaybackUrl(source.streamResolver?.endpoint)
+      ? { ...source.streamResolver, endpoint: "" }
+      : source.streamResolver
   };
   return urls.some((url) => !isLocalSourceProxyUrl(url) && isBlockedPlaybackUrl(url))
     || /\b(?:candy\.ai|player\.zilla-networks\.com)\b/i.test(sourceIdentityText(identitySource));
