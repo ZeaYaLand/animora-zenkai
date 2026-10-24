@@ -263,24 +263,25 @@ function isActivePlaybackSource(source = {}, episode = {}) {
   return String(source.videoUrl || "") === String(playable);
 }
 
+function isRussianCatalogSource(source = {}) {
+  // Strict allowlist: only the Russian-language AniLiberty/Anilibria catalog.
+  // Do not let generic direct/HLS links or legacy foreign scrapers re-enter the picker.
+  const identity = sourceIdentityText(source);
+  const language = String(source.language || source.lang || source.audioLanguage || source.dubLanguage || "").toLowerCase();
+  return /aniliberty|anilibria/.test(identity)
+    && (!language || /^(ru|rus|russian|русский|русская|русское|русские)$/.test(language));
+}
+
 function getEpisodePlaybackSources(episode = {}) {
   return orderSourceOptions(normalizeEpisodeSourceOptions(episode).filter((source) => (
-    !isBlockedPlaybackSource(source)
-    && (
-      isAnimeAv1Source(source)
-      || isAnimeYTSource(source)
-      || isAnimeNeonSource(source)
-      || isJKAnimeSource(source)
-      || isTioAnimeSource(source)
-      || isAdultFallbackSource(source)
-      || isActivePlaybackSource(source, episode)
-    )
+    !isBlockedPlaybackSource(source) && isRussianCatalogSource(source)
   )));
 }
 
 if (typeof module !== "undefined" && module.exports) {
   module.exports = {
     sourceIdentityText,
+    isRussianCatalogSource,
     isBlockedPlaybackUrl,
     isBlockedPlaybackSource,
     isPreferredAdultSource,
