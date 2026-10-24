@@ -5,9 +5,8 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="color-scheme" content="dark">
   <title>ANIMORA — просмотр аниме</title>
-  <link rel="stylesheet" href="/player/v2.css?v=2">
-  <script defer src="https://cdn.jsdelivr.net/npm/hls.js@1.6.16/dist/hls.min.js"></script>
-  <script defer src="/player/v2.js?v=2"></script>
+  <link rel="stylesheet" href="/player/v2.css?v=3">
+  <script defer src="/player/v2.js?v=3"></script>
 </head>
 <body>
   <main class="v2-app">
@@ -16,15 +15,16 @@
       <button id="back" class="v2-icon-button" type="button" aria-label="Назад">←</button>
     </header>
     <section class="v2-stage" aria-label="Видеоплеер">
-      <video id="video" controls playsinline preload="metadata"></video>
-      <div id="loading" class="v2-overlay"><span class="v2-spinner"></span><strong>Подключаем источник…</strong><p id="loadingText">Проверяем доступность видео</p></div>
-      <div id="error" class="v2-overlay" hidden><strong id="errorTitle">Не удалось запустить видео</strong><p id="errorText">Попробуйте другой источник.</p><button id="retry" type="button">Повторить</button></div>
-      <iframe id="embed" title="Внешний видеоплеер" allow="autoplay; fullscreen; picture-in-picture; encrypted-media" allowfullscreen hidden referrerpolicy="strict-origin-when-cross-origin"></iframe>
+      <iframe id="engineFrame" title="ANIMORA видеоплеер" allow="autoplay; fullscreen; picture-in-picture; encrypted-media; remote-playback" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
+      <iframe id="embedFrame" title="Внешний видеоплеер" allow="autoplay; fullscreen; picture-in-picture; encrypted-media" allowfullscreen hidden referrerpolicy="strict-origin-when-cross-origin"></iframe>
+      <div id="loading" class="v2-overlay"><span class="v2-spinner"></span><strong id="loadingTitle">Подключаем источник…</strong><p id="loadingText">Проверяем доступность видео</p></div>
+      <div id="error" class="v2-overlay" hidden><strong id="errorTitle">Не удалось запустить видео</strong><p id="errorText">Попробуйте другой источник.</p><button id="retry" type="button">Повторить источник</button></div>
     </section>
     <section class="v2-info">
       <div><p class="v2-eyebrow">ANIMORA / ПРОСМОТР</p><h1 id="title">Просмотр аниме</h1><p id="episode" class="v2-muted"></p></div>
       <div class="v2-source-block"><label for="sourceSelect">Источник</label><select id="sourceSelect" disabled><option>Загрузка источников…</option></select></div>
     </section>
+    <p id="diagnostic" class="v2-note" hidden></p>
   </main>
 </body>
 </html>
