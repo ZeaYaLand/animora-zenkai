@@ -9649,35 +9649,35 @@ function renderSettings() {
   // (the enabled-source count lived only in the removed Sources panel)
 
   settingsGrid.innerHTML = `
-    <aside class="settings-rail" aria-label="Settings categories">
+    <aside class="settings-rail" aria-label="Разделы настроек">
       <button class="${tc("general")}" data-settings-nav="general" type="button">
-        <span class="rail-icon" aria-hidden="true">⚙</span> General
+        <span class="rail-icon" aria-hidden="true">⚙</span> Общие
       </button>
       <button class="${tc("player")}" data-settings-nav="player" type="button">
-        <span class="rail-icon" aria-hidden="true">▶</span> Player
+        <span class="rail-icon" aria-hidden="true">▶</span> Плеер
       </button>
       <button class="${tc("shortcuts")}" data-settings-nav="shortcuts" type="button">
-        <span class="rail-icon" aria-hidden="true">⌨</span> Shortcuts
+        <span class="rail-icon" aria-hidden="true">⌨</span> Горячие клавиши
       </button>
       <button class="${tc("legal")}" data-settings-nav="legal" type="button">
-        <span class="rail-icon" aria-hidden="true">⚖</span> Legal
+        <span class="rail-icon" aria-hidden="true">⚖</span> Правовая информация
       </button>
-      <span class="settings-version">ZenkaiTV 2.0 · Web / Android TV</span>
+      <span class="settings-version">ANIMORA · Веб / Android</span>
     </aside>
 
     <div class="settings-console">
 
-      <!-- ── General ── -->
+      <!-- ── Общие настройки ── -->
       <section ${pa("general")}>
         <div class="settings-panel-head">
           <span class="settings-icon" aria-hidden="true">⚙</span>
           <div>
-            <h3>General</h3>
-            <p>Language, layout, and app behavior.</p>
+            <h3>Общие настройки</h3>
+            <p>Язык интерфейса, внешний вид и поведение приложения.</p>
           </div>
         </div>
 
-        <div class="settings-group-label">Interface</div>
+        <div class="settings-group-label">Интерфейс</div>
         <div class="settings-line">
           <span>${t("appLanguage")}</span>
           <div class="settings-row settings-segment">
@@ -9687,7 +9687,7 @@ function renderSettings() {
           </div>
         </div>
         <div class="settings-line">
-          <span>${t("compactSidebar")} <small>Collapse navigation to icon-only</small></span>
+          <span>${t("compactSidebar")} <small>Свернуть навигацию до значков</small></span>
           <button class="settings-switch focusable ${state.sidebarCollapsed ? "is-on" : ""}" data-toggle-sidebar-setting type="button"><b></b></button>
         </div>
 
@@ -9698,61 +9698,61 @@ function renderSettings() {
           <button class="secondary-action focusable" data-install-app type="button" ${appInstalled ? "disabled" : ""}>${t(appInstalled ? "installInstalled" : "installAction")}</button>
         </div>
 
-        <div class="settings-group-label">Content</div>
+        <div class="settings-group-label">Контент</div>
         <div class="settings-line adult-mode-highlight">
-          <span>Enable 18+ Mode <small>Show only adult content and switch to a mature theme. Default is off.</small></span>
-          <button class="settings-switch focusable ${typeof AdultMode !== "undefined" && AdultMode.isEnabled() ? "is-on" : ""}" data-toggle-adult-mode type="button" aria-label="Enable 18+ mode"><b></b></button>
+          <span>Режим 18+ <small>Показывать только материалы для взрослых. По умолчанию выключен.</small></span>
+          <button class="settings-switch focusable ${typeof AdultMode !== "undefined" && AdultMode.isEnabled() ? "is-on" : ""}" data-toggle-adult-mode type="button" aria-label="Включить режим 18+"><b></b></button>
         </div>
         <div class="settings-line">
-          <span>Anime title language <small>How titles appear across the app</small></span>
+          <span>Язык названий <small>Как отображаются названия аниме</small></span>
           <div class="settings-row settings-segment">
-            <button class="settings-choice focusable ${ui.titleLanguage !== "romaji" ? "is-selected" : ""}" data-title-language="english">English</button>
-            <button class="settings-choice focusable ${ui.titleLanguage === "romaji" ? "is-selected" : ""}" data-title-language="romaji">Romaji</button>
+            <button class="settings-choice focusable ${ui.titleLanguage !== "romaji" ? "is-selected" : ""}" data-title-language="english">Английский</button>
+            <button class="settings-choice focusable ${ui.titleLanguage === "romaji" ? "is-selected" : ""}" data-title-language="romaji">Ромадзи</button>
           </div>
         </div>
 
         <div class="settings-divider"></div>
-        <div class="settings-group-label">Accessibility</div>
+        <div class="settings-group-label">Специальные возможности</div>
         <div class="settings-line">
-          <span>${t("tvFocus")} <small>Highlight ring on focused elements</small></span>
+          <span>${t("tvFocus")} <small>Подсветка выбранного элемента</small></span>
           <button class="settings-switch focusable ${ui.focusGlow ? "is-on" : ""}" data-toggle-pref="focusGlow" type="button"><b></b></button>
         </div>
         <div class="settings-line">
-          <span>${t("motion")} <small>Enable UI animations and transitions</small></span>
+          <span>${t("motion")} <small>Включить анимацию интерфейса и переходы</small></span>
           <button class="settings-switch focusable ${ui.motion ? "is-on" : ""}" data-toggle-pref="motion" type="button"><b></b></button>
         </div>
 
         <div class="settings-divider"></div>
-        <div class="settings-group-label">Catalog</div>
+        <div class="settings-group-label">Каталог</div>
         <div class="settings-line">
-          <span>Loaded catalog <small>Live source / title / episode totals</small></span>
+          <span>Загруженный каталог <small>Количество источников, аниме и серий</small></span>
           <span class="settings-stat" id="settingsCatalogStatus">${escapeHtml(state.catalogStatus || "Syncing anime metadata…")}</span>
         </div>
         <div class="settings-line">
-          <span>Adult catalog <small>Sync current UnderHentai releases and title artwork</small></span>
-          <button class="secondary-action focusable" data-refresh-adult-catalog type="button">Refresh</button>
+          <span>Каталог 18+ <small>Обновить релизы и обложки</small></span>
+          <button class="secondary-action focusable" data-refresh-adult-catalog type="button">Обновить</button>
         </div>
 
         <div class="settings-divider"></div>
-        <div class="settings-group-label">Data</div>
+        <div class="settings-group-label">Данные</div>
         <div class="settings-actions">
           <button class="secondary-action focusable" data-clear-cache>${t("clearCache")}</button>
           <button class="secondary-action focusable" data-reset-settings>${t("resetSettings")}</button>
         </div>
       </section>
 
-      <!-- ── Player ── -->
+      <!-- ── Плеер ── -->
       <section ${pa("player")}>
         <div class="settings-panel-head">
           <span class="settings-icon" aria-hidden="true">▶</span>
           <div>
             <h3>${t("playback")}</h3>
-            <p>Player engine, quality, and autoplay behavior.</p>
+            <p>Настройки воспроизведения, качества и автоматического запуска.</p>
           </div>
         </div>
 
-        <div class="settings-group-label">Playback</div>
-        ${LATINO_DUB_ENABLED ? `        <div class="settings-line">
+        <div class="settings-group-label">Воспроизведение</div>
+        ${LATINO_DUB_ENABLED && language === "es" ? `        <div class="settings-line">
           <span>${language === "es" ? "Version del anime" : "Anime version"} <small>${language === "es" ? "Idioma preferido para nuevos episodios" : "Preferred language for new episodes"}</small></span>
           <div class="settings-row settings-segment">
             <button class="settings-choice focusable ${watchLanguage === "spanish" ? "is-selected" : ""}" data-watch-language-setting="spanish" type="button">Latino</button>
@@ -9760,7 +9760,7 @@ function renderSettings() {
           </div>
         </div>` : ""}
         <div class="settings-line">
-          <span>Video fit <small>Same contain, cover, and fill modes as the APK player</small></span>
+          <span>Отображение видео <small>Вписать, заполнить или обрезать кадр</small></span>
           <div class="settings-row settings-segment">
             ${["contain", "cover", "fill"].map((fit) => `
               <button class="settings-choice focusable ${ui.playerFit === fit ? "is-selected" : ""}" data-player-fit-setting="${fit}" type="button">${fit}</button>
@@ -9768,47 +9768,47 @@ function renderSettings() {
           </div>
         </div>
         <label class="settings-line">
-          <span>Stream quality <small>Auto or fixed HLS quality rank when available</small></span>
+          <span>Качество потока <small>Автоматическое или выбранное качество HLS</small></span>
           <select class="language-select focusable settings-select" id="settingsQuality">
-            <option value="0" ${Number(ui.playerQuality || 0) === 0 ? "selected" : ""}>Auto</option>
-            <option value="1" ${Number(ui.playerQuality || 0) === 1 ? "selected" : ""}>Highest</option>
-            <option value="2" ${Number(ui.playerQuality || 0) === 2 ? "selected" : ""}>Second</option>
-            <option value="3" ${Number(ui.playerQuality || 0) === 3 ? "selected" : ""}>Third</option>
+            <option value="0" ${Number(ui.playerQuality || 0) === 0 ? "selected" : ""}>Авто</option>
+            <option value="1" ${Number(ui.playerQuality || 0) === 1 ? "selected" : ""}>Максимальное</option>
+            <option value="2" ${Number(ui.playerQuality || 0) === 2 ? "selected" : ""}>Второе</option>
+            <option value="3" ${Number(ui.playerQuality || 0) === 3 ? "selected" : ""}>Третье</option>
           </select>
         </label>
         <div class="settings-line">
-          <span>Hero autoplay <small>Auto-play featured trailer on home screen</small></span>
+          <span>Автозапуск на главной <small>Автоматически запускать трейлер на главном экране</small></span>
           <button class="settings-switch focusable ${ui.autoplayHero ? "is-on" : ""}" data-toggle-pref="autoplayHero" type="button"><b></b></button>
         </div>
         <div class="settings-line">
-          <span>Live subtitle translation <small>Translate available subtitle files to Spanish during playback</small></span>
+          <span>Перевод субтитров <small>Автоматический перевод доступных субтитров во время просмотра</small></span>
           <button class="settings-switch focusable ${ui.subtitleTranslation ? "is-on" : ""}" data-toggle-pref="subtitleTranslation" type="button"><b></b></button>
         </div>
         <div class="settings-line">
-          <span>Rich metadata <small>Show AniList/MAL IDs, status, score, and source info in anime details</small></span>
+          <span>Подробная информация <small>Показывать статус, рейтинг и данные источника в карточке аниме</small></span>
           <button class="settings-switch focusable ${ui.metadataDetail ? "is-on" : ""}" data-toggle-pref="metadataDetail" type="button"><b></b></button>
         </div>
       </section>
 
-      <!-- ── Shortcuts ── -->
+      <!-- ── Горячие клавиши ── -->
       <section ${pa("shortcuts")}>
         <div class="settings-panel-head">
           <span class="settings-icon" aria-hidden="true">⌨</span>
           <div>
-            <h3>Shortcuts</h3>
-            <p>Keyboard and remote control actions.</p>
+            <h3>Горячие клавиши</h3>
+            <p>Управление с клавиатуры и пульта.</p>
           </div>
         </div>
 
-        <div class="settings-group-label">Player Controls</div>
+        <div class="settings-group-label">Управление плеером</div>
         ${[
-          ["Play / Pause", "Space"],
-          ["Seek back 10 s", "←"],
-          ["Seek forward 10 s", "→"],
-          ["Volume up", "↑"],
-          ["Volume down", "↓"],
-          ["Toggle fullscreen", "F"],
-          ["Exit / Back", "Esc"],
+          ["Воспроизведение / пауза", "Пробел"],
+          ["Назад на 10 секунд", "←"],
+          ["Вперёд на 10 секунд", "→"],
+          ["Увеличить громкость", "↑"],
+          ["Уменьшить громкость", "↓"],
+          ["Полноэкранный режим", "F"],
+          ["Выход / назад", "Esc"],
         ].map(([label, keys]) => `
           <div class="settings-shortcut-row">
             <span>${label}</span>
@@ -9817,12 +9817,12 @@ function renderSettings() {
         `).join("")}
 
         <div class="settings-divider"></div>
-        <div class="settings-group-label">Navigation</div>
+        <div class="settings-group-label">Навигация</div>
         ${[
-          ["Previous episode", "Shift + P"],
-          ["Next episode", "Shift + N"],
-          ["Open settings", "Ctrl + ,"],
-          ["Search", "Ctrl + K"],
+          ["Предыдущая серия", "Shift + P"],
+          ["Следующая серия", "Shift + N"],
+          ["Открыть настройки", "Ctrl + ,"],
+          ["Поиск", "Ctrl + K"],
         ].map(([label, keys]) => `
           <div class="settings-shortcut-row">
             <span>${label}</span>
@@ -9831,13 +9831,13 @@ function renderSettings() {
         `).join("")}
       </section>
 
-      <!-- ── Legal ── -->
+      <!-- ── Правовая информация ── -->
       <section ${pa("legal")}>
         <div class="settings-panel-head">
           <span class="settings-icon" aria-hidden="true">⚖</span>
           <div>
-            <h3>Legal</h3>
-            <p>Terms of Service and Privacy Policy.</p>
+            <h3>Правовая информация</h3>
+            <p>Условия использования и политика конфиденциальности.</p>
           </div>
         </div>
         <div class="settings-legal-tabs">
