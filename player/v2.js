@@ -163,12 +163,47 @@ async function animeVostSources(id){
  }
  return dedupe(out);
 }
+async function animeGoSources(id){
+ const title=p.get("title")||p.get("name")||id.slug;
+ const queries=[title,id.slug].filter((v,i,a)=>v&&a.indexOf(v)===i),out=[],seen=new Set();
+ const wanted=titleKey(title),slugKey=titleKey(id.slug);
+ const score=row=>{
+  const names=[row?.title,row?.slug].map(titleKey).filter(Boolean);
+  return (names.some(n=>n===wanted)?6:0)+(names.some(n=>n===slugKey)?5:0)
+   +(names.some(n=>n.length>3&&wanted.length>3&&(n.includes(wanted)||wanted.includes(n)))?2:0)
+   +(names.some(n=>n.length>3&&slugKey.length>3&&(n.includes(slugKey)||slugKey.includes(n)))?1:0);
+ };
+ for(const query of queries){
+  try{
+   const search=new URL("/api/animego/search",location.origin);search.searchParams.set("query",query);
+   const sr=await fetch(search.href,{headers:{Accept:"application/json"},credentials:"same-origin",cache:"no-store"});
+   if(!sr.ok)continue;
+   const payload=await sr.json(),rows=apiRows(payload).sort((a,b)=>score(b)-score(a));
+   for(const row of rows.filter(x=>score(x)>=2).slice(0,3)){
+    const idValue=String(row.id||"").trim();if(!/^\\d{1,12}$/.test(idValue))continue;
+    const key=idValue+":"+Number(id.ep);if(seen.has(key))continue;seen.add(key);
+    const url=new URL("/api/animego/players",location.origin);url.searchParams.set("id",idValue);url.searchParams.set("episode",String(Number(id.ep)));
+    const pr=await fetch(url.href,{headers:{Accept:"application/json"},credentials:"same-origin",cache:"no-store"});
+    if(!pr.ok)continue;const pp=await pr.json();
+    for(const item of apiRows(pp)){
+     const embed=urlSafe(item.url);if(!embed)continue;
+     const provider=String(item.provider||"AnimeGO");
+     const label=String(item.label||"Русская озвучка").trim();
+     const normalized=source({url:embed,kind:"iframe",label:"AnimeGO · "+label+" · "+provider,provider,language:"ru"},0,"AnimeGO");
+     if(normalized)out.push(normalized);
+    }
+   }
+  }catch(e){console.warn("[ANIMORA Player] AnimeGO lookup failed",e)}
+ }
+ return dedupe(out);
+}
+function urlSafe(value){try{const u=new URL(String(value||"").trim());return /^https?:$/.test(u.protocol)?u.href:""}catch(_){return""}}
 async function apiSources(){
  // Playback is restricted to the configured Russian-language providers.
  // Legacy URL parameters cannot enable a foreign provider.
  const id=identity();
  if(!id)return[];
- try{return dedupe([...(await aniLibertySources(id)),...(await animeVostSources(id))])}
+ try{return dedupe([...(await aniLibertySources(id)),...(await animeVostSources(id)),...(await animeGoSources(id))])}
  catch(e){console.warn("[ANIMORA Player] Russian source lookup failed",e);return[]}
 }
 function loading(text,title){$("loading").hidden=false;$("error").hidden=true;$("loadingText").textContent=text||"Проверяем доступность видео";$("loadingTitle").textContent=title||"Подключаем источник…"}
