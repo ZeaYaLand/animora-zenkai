@@ -81,14 +81,19 @@ async function aniLibertySources(id){
     const detail=new URL("/api/aniliberty/anime/releases/"+encodeURIComponent(String(alias)),location.origin);
     try{const dr=await fetch(detail.href,{headers:{Accept:"application/json"},credentials:"same-origin",cache:"no-store"});if(dr.ok){const dp=await dr.json();release=dp?.data?.release||dp?.data||dp?.release||dp}}catch(_){}
     const epNodes=matchingEpisodeNodes(release,Number(id.ep));
+    const rawVoice=release?.team?.voice||release?.team?.voices||release?.voice||[];
+    const voiceNames=(Array.isArray(rawVoice)?rawVoice:[rawVoice])
+     .map(x=>typeof x==="string"?x:x?.name||x?.title||x?.nickname||"")
+     .filter(x=>typeof x==="string"&&x.trim());
+    const teamLabel=[...new Set(voiceNames)].slice(0,3).join(", ");
+    // Do not advertise a release as dubbed when the API provides no voice-team metadata.
+    if(!teamLabel)continue;
     for(const node of epNodes){
      const media=mediaUrls(node);
-     const team=release?.team?.voice||release?.team?.voices||release?.voice||[];
-     const teamLabel=Array.isArray(team)?team.map(x=>typeof x==="string"?x:x?.name||x?.title).filter(Boolean).slice(0,2).join(", "):String(team||"");
      for(const item of media) {
-      const quality=item.label&&/^\d+$/.test(item.label)?" · "+item.label+"p":"";
-      const dub=teamLabel?" · "+teamLabel:"";
-      const normalized=source({...item,label:"AniLiberty · русская озвучка"+dub+quality,provider:"AniLiberty"},0,"AniLiberty");
+      const qualityMatch=String(item.label||"").match(/(?:^|[^0-9])(1080|720|480|360)(?:p|[^0-9]|$)/i);
+      const quality=qualityMatch?" · "+qualityMatch[1]+"p":"";
+      const normalized=source({...item,label:"AniLiberty · "+teamLabel+quality,provider:"AniLiberty",voice:teamLabel,language:"ru"},0,"AniLiberty");
       if(normalized) out.push(normalized);
      }
     }
