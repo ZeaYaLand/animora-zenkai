@@ -24,7 +24,7 @@ function apiRows(payload){
  if(payload.data&&typeof payload.data==="object")for(const key of ["items","results","releases","list","entries"])if(Array.isArray(payload.data[key]))return payload.data[key];
  return payload.release&&typeof payload.release==="object"?[payload.release]:payload.id||payload.alias?[payload]:[];
 }
-function titleKey(value){return String(value||"").toLowerCase().normalize("NFKD").replace(/[\\u0300-\\u036f]/g,"").replace(/[^a-z0-9а-яё]+/gi," ").trim()}
+function titleKey(value){return String(value||"").toLowerCase().normalize("NFKD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9а-яё]+/gi," ").trim()}
 function releaseNames(item){const n=item&&item.names;return [item?.name,item?.title,item?.names?.ru,item?.names?.en,item?.names?.alternative,item?.alias,item?.code].filter(Boolean)}
 function episodeNumber(item){
  for(const key of ["episode","number","ordinal","position","sortOrder","sort_order","episodeNumber","episode_number"]){
