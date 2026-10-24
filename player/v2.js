@@ -230,7 +230,7 @@ function fail(reason){
  if(active>=0&&active+1<sources.length){console.warn("[ANIMORA Player] source failed, trying fallback:",reason);start(active+1)}
  else error("Источник не запустился. "+(sources.length>1?"Выберите другой источник в списке.":"Для этой серии не найден другой доступный источник."));
 }
-function fillSelect(){const sel=$("sourceSelect");sel.replaceChildren();sources.forEach((s,i)=>{const o=document.createElement("option");o.value=String(i);o.textContent=s.label;sel.appendChild(o)});sel.disabled=sources.length<2}
+function fillSelect(){const sel=$("sourceSelect");sel.replaceChildren();sources.forEach((s,i)=>{const o=document.createElement("option");o.value=String(i);o.textContent=s.label;sel.appendChild(o)});sel.disabled=sources.length<2;const next=$("nextSource");if(next)next.disabled=sources.length<2}
 window.addEventListener("message",ev=>{
  if(ev.origin!==location.origin||ev.source!==frame.contentWindow)return;
  let m=ev.data;if(typeof m==="string"){try{m=JSON.parse(m)}catch(_){return}}if(!m||!m.vcmd)return;
@@ -243,6 +243,7 @@ const ep=p.get("episode")||p.get("ep");$("episode").textContent=ep?"Серия "
 $("back").addEventListener("click",()=>{const ret=p.get("returnTo");if(ret&&ret.startsWith("/")&&!ret.startsWith("//"))location.href=ret;else if(history.length>1)history.back();else location.href="/"});
 $("retry").addEventListener("click",()=>start(Math.max(0,active)));
 $("sourceSelect").addEventListener("change",()=>start(Number($("sourceSelect").value)));
+$("nextSource").addEventListener("click",()=>{if(sources.length>1)start((active+1)%sources.length)});
 async function initialise(){loading("Ищем русскую озвучку и доступный видеопоток…");sources=await apiSources();fillSelect();if(!sources.length){error("Не удалось найти доступный русскоязычный поток для этой серии. Зарубежные источники отключены.");$("diagnostic").hidden=false;$("diagnostic").textContent="ANIMORA проверила русскоязычные источники AniLiberty, AnimeVost и AnimeGO. Источники с пометкой «субтитры» и зарубежные резервные источники отключены.";return}start(0)}
 initialise().catch(e=>{console.error("[ANIMORA Player] init failed",e);error("Ошибка при получении источников. Нажмите «Повторить источник».")});
 })();
