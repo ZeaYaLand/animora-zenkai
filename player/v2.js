@@ -65,7 +65,7 @@ async function aniLibertySources(id){
  const title=p.get("title")||p.get("name")||id.slug,queries=[title,id.slug].filter((v,i,a)=>v&&a.indexOf(v)===i),out=[];
  for(const query of queries){
   try{
-   const search=new URL("/api/aniliberty/app/search/releases",location.origin);search.searchParams.set("query",query);search.searchParams.set("limit","20");
+   const search=new URL("/api/aniliberty/app/search/releases",location.origin);search.searchParams.set("query",query);search.searchParams.set("limit","30");
    const sr=await fetch(search.href,{headers:{Accept:"application/json"},credentials:"same-origin",cache:"no-store"});
    if(!sr.ok)continue;const searchPayload=await sr.json(),rows=apiRows(searchPayload);
    if(!rows.length)continue;
@@ -74,19 +74,30 @@ async function aniLibertySources(id){
     const score=x=>{const names=releaseNames(x).map(titleKey);return (names.some(n=>n===wanted)?6:0)+(names.some(n=>n===slugKey)?5:0)+(names.some(n=>n.includes(wanted)||wanted.includes(n))?2:0)};
     return score(b)-score(a);
    });
-   for(const row of rows.slice(0,8)){
+   for(const row of rows.slice(0,30)){
     const alias=row.alias||row.code||row.slug||row.id||row.releaseId||row.release_id;
     if(alias==null)continue;
     let release=row;
     const detail=new URL("/api/aniliberty/anime/releases/"+encodeURIComponent(String(alias)),location.origin);
     try{const dr=await fetch(detail.href,{headers:{Accept:"application/json"},credentials:"same-origin",cache:"no-store"});if(dr.ok){const dp=await dr.json();release=dp?.data?.release||dp?.data||dp?.release||dp}}catch(_){}
     const epNodes=matchingEpisodeNodes(release,Number(id.ep));
-    const rawVoice=release?.team?.voice||release?.team?.voices||release?.voice||[];
-    const voiceNames=(Array.isArray(rawVoice)?rawVoice:[rawVoice])
-     .map(x=>typeof x==="string"?x:x?.name||x?.title||x?.nickname||"")
-     .filter(x=>typeof x==="string"&&x.trim());
-    const teamLabel=[...new Set(voiceNames)].slice(0,3).join(", ");
-    // Do not advertise a release as dubbed when the API provides no voice-team metadata.
+    const voiceValues=[];
+    for(const candidate of [release,...epNodes]){
+     if(!candidate||typeof candidate!=="object")continue;
+     const values=[
+      candidate?.team?.voice,candidate?.team?.voices,candidate?.team?.voiceover,
+      candidate?.team?.voiceovers,candidate?.voice,candidate?.voices,
+      candidate?.voiceover,candidate?.voiceovers,candidate?.dub,candidate?.dubbing
+     ];
+     for(const raw of values){
+      for(const item of (Array.isArray(raw)?raw:[raw])){
+       const name=typeof item==="string"?item:item?.name||item?.title||item?.nickname||item?.label||"";
+       if(typeof name==="string"&&name.trim())voiceValues.push(name.trim());
+      }
+     }
+    }
+    const teamLabel=[...new Set(voiceValues)].slice(0,6).join(", ");
+    // Only show verified Russian-dub releases; do not invent a voice team.
     if(!teamLabel)continue;
     for(const node of epNodes){
      const media=mediaUrls(node);
