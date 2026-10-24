@@ -42,9 +42,9 @@ function matchingEpisodeNodes(release,wanted){
   }
   if(Array.isArray(node)){for(const x of node)walk(x,depth+1);return}
   for(const [key,val] of Object.entries(node)){
-   if(/^\\d+(?:\\.\\d+)?$/.test(key)&&Number(key)===wanted&&val&&typeof val==="object"){found.push(val);walk(val,depth+1);continue}
+   if(/^\d+(?:\.\d+)?$/.test(key)&&Number(key)===wanted&&val&&typeof val==="object"){found.push(val);walk(val,depth+1);continue}
    if(val&&typeof val==="object"){walk(val,depth+1);continue}
-   if(typeof val==="string"&&/^\\d+(?:\\.\\d+)?$/.test(key)&&Number(key)===wanted&&val.length>10){found.push({episode:wanted,url:val})}
+   if(typeof val==="string"&&/^\d+(?:\.\d+)?$/.test(key)&&Number(key)===wanted&&val.length>10){found.push({episode:wanted,url:val})}
   }
  }
  walk(release,0);return found;
@@ -55,7 +55,7 @@ function mediaUrls(node){
   if(depth>9||value==null)return;
   if(typeof value==="string"){
    const u=url(value);
-   if(u&&(/\\.m3u8(?:$|[?#])/i.test(u)||/\\.mp4(?:$|[?#])/i.test(u))&&(/hls|url|src|video|stream|720|1080|480|fhd|hd|sd|m3u8|mp4/i.test(key)||/\\.(m3u8|mp4)(?:$|[?#])/i.test(u))&&!seen.has(u)){seen.add(u);found.push({url:u,type:/m3u8/i.test(u)?"hls":"mp4",label:key||"Видео"})}
+   if(u&&(/\.m3u8(?:$|[?#])/i.test(u)||/\.mp4(?:$|[?#])/i.test(u))&&(/hls|url|src|video|stream|720|1080|480|fhd|hd|sd|m3u8|mp4/i.test(key)||/\.(m3u8|mp4)(?:$|[?#])/i.test(u))&&!seen.has(u)){seen.add(u);found.push({url:u,type:/m3u8/i.test(u)?"hls":"mp4",label:key||"Видео"})}
    return;
   }
   if(Array.isArray(value)){value.forEach((v,i)=>walk(v,String(i),depth+1));return}
@@ -88,7 +88,7 @@ async function aniLibertySources(id){
      const team=release?.team?.voice||release?.team?.voices||release?.voice||[];
      const teamLabel=Array.isArray(team)?team.map(x=>typeof x==="string"?x:x?.name||x?.title).filter(Boolean).slice(0,2).join(", "):String(team||"");
      for(const item of media) {
-      const quality=item.label&&/^\\d+$/.test(item.label)?" · "+item.label+"p":"";
+      const quality=item.label&&/^\d+$/.test(item.label)?" · "+item.label+"p":"";
       const dub=teamLabel?" · "+teamLabel:"";
       const normalized=source({...item,label:"AniLiberty · русская озвучка"+dub+quality,provider:"AniLiberty"},0,"AniLiberty");
       if(normalized) return [normalized];
