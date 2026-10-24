@@ -350,6 +350,13 @@ const state = {
   pendingDeepLinkTarget: null
 };
 
+const APP_LANGUAGE_RUSSIAN_MIGRATION_KEY = "animora-russian-default-v1";
+if (localStorage.getItem(APP_LANGUAGE_RUSSIAN_MIGRATION_KEY) !== "done") {
+  state.appLanguage = "ru";
+  localStorage.setItem(APP_LANGUAGE_KEY, "ru");
+  localStorage.setItem(APP_LANGUAGE_RUSSIAN_MIGRATION_KEY, "done");
+}
+
 const TITLE_LANGUAGE_ROMAJI_MIGRATION_KEY = "animetv-title-language-romaji-v1";
 if (localStorage.getItem(TITLE_LANGUAGE_ROMAJI_MIGRATION_KEY) !== "done") {
   state.uiPreferences.titleLanguage = "romaji";
