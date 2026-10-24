@@ -15,7 +15,7 @@ function source(item,i,provider){
 }
 function dedupe(list){const seen=new Set();return list.filter(Boolean).filter(s=>!seen.has(s.url)&&seen.add(s.url))}
 function directSources(){const out=[],direct=p.get("src")||p.get("url")||p.get("videoUrl")||p.get("file");if(direct)out.push(source({url:direct,type:p.get("type"),label:p.get("provider")||"Переданный источник"},0));for(const k of ["sources","fallbacks","alternatives"])for(const x of parse(p.get(k)))out.push(source(x,out.length));return dedupe(out)}
-function identity(){const explicit=p.get("slug")||p.get("anime")||p.get("animeSlug"),id=p.get("animeId")||p.get("id"),slug=explicit||(id&&!/^\d+$/.test(id.trim())?id:""),ep=p.get("episode")||p.get("ep")||p.get("episodeNumber");return slug&&ep?{slug:slug.trim(),ep:ep.trim()}:null}
+function identity(){const explicit=p.get("slug")||p.get("anime")||p.get("animeSlug"),id=p.get("animeId")||p.get("id"),title=p.get("title")||p.get("name"),slug=explicit||(id&&!/^\d+$/.test(id.trim())?id:"")||title,ep=p.get("episode")||p.get("ep")||p.get("episodeNumber");return slug&&ep?{slug:slug.trim(),ep:ep.trim()}:null}
 function apiRows(payload){
  if(Array.isArray(payload))return payload;
  if(!payload||typeof payload!=="object")return[];
@@ -135,6 +135,6 @@ const ep=p.get("episode")||p.get("ep");$("episode").textContent=ep?"Серия "
 $("back").addEventListener("click",()=>{const ret=p.get("returnTo");if(ret&&ret.startsWith("/")&&!ret.startsWith("//"))location.href=ret;else if(history.length>1)history.back();else location.href="/"});
 $("retry").addEventListener("click",()=>start(Math.max(0,active)));
 $("sourceSelect").addEventListener("change",()=>start(Number($("sourceSelect").value)));
-async function initialise(){loading("Получаем список источников серии…");sources=directSources();if(!sources.length)sources=await apiSources();fillSelect();if(!sources.length){error("ANIMORA не получила источники серии. Проверьте slug, номер серии и доступность API источников.");$("diagnostic").hidden=false;$("diagnostic").textContent="Проверены API animeav1 и tioanime. Если они возвращают 403 или пустой список, плееру неоткуда получить видеопоток.";return}start(0)}
+async function initialise(){loading("Ищем доступные русские озвучки и источники серии…");const direct=directSources();if(direct.length){sources=direct;const id=identity();if(id){const russian=await aniLibertySources(id);sources=dedupe([...russian,...direct])}}else sources=await apiSources();fillSelect();if(!sources.length){error("ANIMORA не получила источники серии. Попробуйте обновить список или выбрать другую серию.");$("diagnostic").hidden=false;$("diagnostic").textContent="Проверены AniLiberty, AnimeAV1 и TioAnime. Доступность озвучки зависит от наличия релиза и рабочего видеопотока у источника.";return}start(0)}
 initialise().catch(e=>{console.error("[ANIMORA Player] init failed",e);error("Ошибка при получении источников. Нажмите «Повторить источник».")});
 })();
