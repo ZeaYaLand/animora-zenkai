@@ -40,7 +40,7 @@ module.exports = async function animeGoProxy(req, res) {
       const r = await get(BASE + "/search/anime?q=" + encodeURIComponent(q));
       if (!r.ok) return reply(res, 502, { ok:false, error:"AnimeGO search HTTP " + r.status });
       const html = await r.text(), results = [], seen = new Set();
-      const chunks = html.split(/class="[^"]*(?:^|\s)ani-grid__item(?:\s[^"]*)?"/i).slice(1);
+      const chunks = html.split(/class="(?:ani-grid__item|[^"]*\sani-grid__item)(?:\s[^"]*)?"/i).slice(1);
       for (const chunk of chunks) {
         const link = chunk.match(/href="(\/anime\/([a-z0-9-]+)-(\d+))"/i);
         const title = chunk.match(/\btitle="([^"]+)"/i) || chunk.match(/<div[^>]*class="[^"]*ani-grid__item-title[^"]*"[^>]*>\s*<a\b[^>]*>([\s\S]*?)<\/a>/i) || chunk.match(/<a\b[^>]*href="\/anime\/[^"]+"[^>]*>([\s\S]*?)<\/a>/i);
