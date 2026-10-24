@@ -17,20 +17,20 @@ test("AnimeGO search IDs are validated as digits, not literal backslash-d", () =
 });
 
 test("player uses only configured Russian source adapters and has a bounded wait", () => {
-  assert.match(player, /aniLibertySources\(id\)/);
-  assert.match(player, /animeVostSources\(id\)/);
-  assert.match(player, /animeGoSources\(id\)/);
-  assert.match(player, /deadline\(aniLibertySources\(id\),12000\)/);
-  assert.match(player, /субтитр\|subtitles\?/);
+  assert.match(player, /aniLibertySources\\(id\\)/);
+  assert.match(player, /animeVostSources\\(id\\)/);
+  assert.match(player, /animeGoSources\\(id\\)/);
+  assert.match(player, /deadline\\(aniLibertySources\\(id\\),12000\\)/);
+  assert.match(player, /субтитр|subtitles?\\b/);
   assert.match(player, /зарубежные источники отключены/);
 });
 
 test("AnimeGO proxy only exposes recognized embed providers", () => {
-  assert.match(animeGo, /aniboom\|\\\\bcvh\\\\b\|kodik\|sibnet/i);
-  assert.match(animeGo, /kind:\\\"iframe\\\"/);
+  assert.ok(animeGo.includes("/aniboom|\\\\bcvh\\\\b|kodik|sibnet/i"));
+  assert.ok(animeGo.includes('kind:"iframe"'));
   assert.match(animeGo, /Unsupported AnimeGO endpoint/);
 });
 
 test("player page busts the old cached JavaScript", () => {
-  assert.match(page, /\/player\/v2\.js\?v=13/);
+  assert.match(page, /\\/player\\/v2\\.js\\?v=13/);
 });
