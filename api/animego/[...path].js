@@ -40,13 +40,13 @@ module.exports = async function animeGoProxy(req, res) {
       const r = await get(BASE + "/search/anime?q=" + encodeURIComponent(q));
       if (!r.ok) return reply(res, 502, { ok:false, error:"AnimeGO search HTTP " + r.status });
       const html = await r.text(), results = [], seen = new Set();
-      const chunks = html.split(/class="[^"]*\bani-grid__item\b[^"]*"/i).slice(1);
+      const chunks = html.split(/class="[^"]*(?:^|\s)ani-grid__item(?:\s[^"]*)?"/i).slice(1);
       for (const chunk of chunks) {
         const link = chunk.match(/href="(\/anime\/([a-z0-9-]+)-(\d+))"/i);
-        const title = chunk.match(/\btitle="([^"]+)"/i) || chunk.match(/<h[1-6][^>]*>([\s\S]*?)<\/h[1-6]>/i);
+        const title = chunk.match(/\btitle="([^"]+)"/i) || chunk.match(/<div[^>]*class="[^"]*ani-grid__item-title[^"]*"[^>]*>\s*<a\b[^>]*>([\s\S]*?)<\/a>/i) || chunk.match(/<a\b[^>]*href="\/anime\/[^"]+"[^>]*>([\s\S]*?)<\/a>/i);
         if (!link || !title || seen.has(link[3])) continue;
         seen.add(link[3]);
-        results.push({ id:link[3], slug:link[2], title:decode(title[1]), url:BASE+link[1] });
+        results.push({ id:link[3], slug:link[2], title:decode(title[1].replace(/<[^>]*>/g, "").trim()), url:BASE+link[1] });
         if (results.length >= 15) break;
       }
       return reply(res, 200, { ok:true, source:"AnimeGO", results });
