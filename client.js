@@ -7966,7 +7966,7 @@ function preferredWatchLanguageForEpisode(show = state.activeShow || {}, episode
 function syncWatchVersionToggle(show = state.activeShow || {}) {
   if (!watchVersionToggle) return;
   const isAdultShow = typeof AdultMode !== "undefined" && AdultMode.isAdultContent(show);
-  const tagged = !isAdultShow && showHasLatinoDub(show);
+  const tagged = state.appLanguage === "es" && !isAdultShow && showHasLatinoDub(show);
   watchVersionToggle.hidden = !tagged;
   if (!tagged) return;
 
