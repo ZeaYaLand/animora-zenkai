@@ -77,8 +77,9 @@ async function aniLibertySources(id){
      +(names.some(n=>n.length>3&&slugKey.length>3&&(n.includes(slugKey)||slugKey.includes(n))?true:false)?1:0);
    };
    rows.sort((a,b)=>score(b)-score(a));
-   const relevant=rows.filter(row=>score(row)>=2).slice(0,30);
+   const relevant=rows.filter(row=>score(row)>=2).slice(0,8);
    for(const row of relevant){
+    if(out.length>=8)break;
     const alias=row.alias||row.code||row.slug||row.id||row.releaseId||row.release_id;
     if(alias==null)continue;
     let release=row;
@@ -115,7 +116,7 @@ async function aniLibertySources(id){
    }
   }catch(e){console.warn("[ANIMORA Player] AniLiberty lookup failed",e)}
  }
- return dedupe(out);
+ return dedupe(out).slice(0,8);
 }
 async function animeVostSources(id){
  const title=p.get("title")||p.get("name")||id.slug;
@@ -135,7 +136,7 @@ async function animeVostSources(id){
    const response=await fetch(search.href,{headers:{Accept:"application/json"},credentials:"same-origin",cache:"no-store"});
    if(!response.ok)continue;
    const rows=apiRows(await response.json()).sort((a,b)=>score(b)-score(a));
-   for(const row of rows.filter(x=>score(x)>=2).slice(0,5)){
+   for(const row of rows.filter(x=>score(x)>=2).slice(0,3)){
     const titleId=String(row.id??row.anime_id??row.animeId??"").trim();
     if(!/^\d{1,12}$/.test(titleId)||seen.has(titleId))continue;
     seen.add(titleId);
@@ -161,7 +162,7 @@ async function animeVostSources(id){
    }
   }catch(e){console.warn("[ANIMORA Player] AnimeVost lookup failed",e)}
  }
- return dedupe(out);
+ return dedupe(out).slice(0,8);
 }
 async function animeGoSources(id){
  const title=p.get("title")||p.get("name")||id.slug;
@@ -196,16 +197,20 @@ async function animeGoSources(id){
    }
   }catch(e){console.warn("[ANIMORA Player] AnimeGO lookup failed",e)}
  }
- return dedupe(out);
+ return dedupe(out).slice(0,8);
 }
 function urlSafe(value){try{const u=new URL(String(value||"").trim());return /^https?:$/.test(u.protocol)?u.href:""}catch(_){return""}}
+function deadline(promise,ms){return new Promise(resolve=>{const timer=setTimeout(()=>resolve([]),ms);Promise.resolve(promise).then(value=>{clearTimeout(timer);resolve(Array.isArray(value)?value:[])},()=>{clearTimeout(timer);resolve([])})})}
 async function apiSources(){
- // Playback is restricted to the configured Russian-language providers.
- // Legacy URL parameters cannot enable a foreign provider.
+ // Playback is restricted to configured Russian-language providers; never fall back to foreign sources.
  const id=identity();
  if(!id)return[];
- try{return dedupe([...(await aniLibertySources(id)),...(await animeVostSources(id)),...(await animeGoSources(id))])}
- catch(e){console.warn("[ANIMORA Player] Russian source lookup failed",e);return[]}
+ const groups=await Promise.all([
+  deadline(aniLibertySources(id),12000),
+  deadline(animeVostSources(id),12000),
+  deadline(animeGoSources(id),12000)
+ ]);
+ return dedupe(groups.flat());
 }
 function loading(text,title){$("loading").hidden=false;$("error").hidden=true;$("loadingText").textContent=text||"Проверяем доступность видео";$("loadingTitle").textContent=title||"Подключаем источник…"}
 function error(text){$("loading").hidden=true;$("error").hidden=false;$("errorText").textContent=text}
