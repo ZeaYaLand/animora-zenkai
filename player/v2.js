@@ -26,8 +26,51 @@
       if (!raw) continue;
       try { const parsed = JSON.parse(raw); if (Array.isArray(parsed)) all.push(...parsed); } catch (e) { console.warn("[ANIMORA Player 2] Invalid " + key + " parameter"); }
     }
+    return dedupeSources(all);
+  }
+  function dedupeSources(items) {
     const seen = new Set();
-    return all.map(normaliseSource).filter(Boolean).filter(s => { if (seen.has(s.url)) return false; seen.add(s.url); return true; });
+    return items.map(normaliseSource).filter(Boolean).filter(s => { if (seen.has(s.url)) return false; seen.add(s.url); return true; });
+  }
+  function collectApiSources(payload, providerName) {
+    if (!payload || typeof payload !== "object") return [];
+    const rows = Array.isArray(payload.sources) ? payload.sources : Array.isArray(payload.data) ? payload.data : Array.isArray(payload.results) ? payload.results : [];
+    return rows.map((item, index) => {
+      if (typeof item === "string") return { url: item, provider: providerName, label: providerName + " · " + (index + 1) };
+      const copy = { ...item };
+      copy.url = copy.videoUrl || copy.url || copy.src || copy.href || copy.externalUrl || copy.iframeUrl || copy.embedUrl;
+      copy.type = copy.type || copy.format || (copy.provider === "HLS" ? "hls" : "");
+      copy.kind = copy.kind || copy.mode || (copy.iframeUrl || copy.embedUrl ? "iframe" : "");
+      copy.label = copy.label || copy.name || copy.provider || (providerName + " · " + (index + 1));
+      return copy;
+    }).filter(Boolean);
+  }
+  function getEpisodeIdentity() {
+    const slug = params.get("slug") || params.get("anime") || params.get("animeId") || params.get("id");
+    const episode = params.get("episode") || params.get("ep") || params.get("episodeNumber");
+    return slug && episode ? { slug, episode } : null;
+  }
+  async function loadSourcesFromExistingApis() {
+    const identity = getEpisodeIdentity();
+    if (!identity) return [];
+    const requested = (params.get("api") || params.get("sourceApi") || "").toLowerCase();
+    const providers = requested ? [requested] : ["animeav1", "tioanime"];
+    const collected = [];
+    for (const provider of providers) {
+      if (!/^[a-z0-9-]+$/.test(provider)) continue;
+      const endpoint = new URL("/api/" + provider + "/sources", location.origin);
+      endpoint.searchParams.set("slug", identity.slug);
+      endpoint.searchParams.set("episode", identity.episode);
+      if (params.get("variant")) endpoint.searchParams.set("variant", params.get("variant"));
+      try {
+        const response = await fetch(endpoint.href, { headers: { Accept: "application/json" }, credentials: "same-origin" });
+        if (!response.ok) { console.warn("[ANIMORA Player 2] Provider unavailable:", provider, response.status); continue; }
+        const payload = await response.json();
+        collected.push(...collectApiSources(payload, provider));
+        if (payload && payload.ok && collected.length && requested) break;
+      } catch (error) { console.warn("[ANIMORA Player 2] Source API request failed:", provider, error); }
+    }
+    return dedupeSources(collected);
   }
   function setLoading(message) { loading.hidden = false; errorBox.hidden = true; $("loadingText").textContent = message || "Проверяем доступность видео"; }
   function clearMedia() {
@@ -79,10 +122,20 @@
   video.addEventListener("waiting", () => { if (!video.hidden) setLoading("Буферизация видео…"); });
   video.addEventListener("playing", () => { loading.hidden = true; errorBox.hidden = true; });
   video.addEventListener("error", () => { if (activeIndex >= 0 && !video.hidden) start(activeIndex + 1); });
-  sources = getSources();
-  sourceSelect.replaceChildren();
-  sources.forEach((s, i) => { const option = document.createElement("option"); option.value = String(i); option.textContent = s.label; sourceSelect.appendChild(option); });
-  sourceSelect.disabled = sources.length < 2;
-  if (!sources.length) showError("Плеер пока не получил адрес серии. Следующий этап — подключить сюда выдачу источников из существующего API ANIMORA.");
-  else start(0);
+  async function initialise() {
+    sources = getSources();
+    if (!sources.length) {
+      setLoading("Запрашиваем источники серии у ANIMORA…");
+      sources = await loadSourcesFromExistingApis();
+    }
+    sourceSelect.replaceChildren();
+    sources.forEach((s, i) => { const option = document.createElement("option"); option.value = String(i); option.textContent = s.label; sourceSelect.appendChild(option); });
+    sourceSelect.disabled = sources.length < 2;
+    if (!sources.length) {
+      showError("Не удалось получить источники. Проверьте параметры адреса: slug и episode. Также API источников может быть недоступно для этой серии.");
+      return;
+    }
+    start(0);
+  }
+  initialise().catch(error => { console.error("[ANIMORA Player 2] Initialisation failed", error); showError("Ошибка загрузки источников серии."); });
 })();
