@@ -40,10 +40,10 @@ module.exports = async function animeGoProxy(req, res) {
       const r = await get(BASE + "/search/anime?q=" + encodeURIComponent(q));
       if (!r.ok) return reply(res, 502, { ok:false, error:"AnimeGO search HTTP " + r.status });
       const html = await r.text(), results = [], seen = new Set();
-      const chunks = html.split(/class="ani-grid__item /i).slice(1);
+      const chunks = html.split(/class="[^"]*\bani-grid__item\b[^"]*"/i).slice(1);
       for (const chunk of chunks) {
         const link = chunk.match(/href="(\/anime\/([a-z0-9-]+)-(\d+))"/i);
-        const title = chunk.match(/<a\s+title="([^"]+)"\s+href="\/anime\//i);
+        const title = chunk.match(/\btitle="([^"]+)"/i) || chunk.match(/<h[1-6][^>]*>([\s\S]*?)<\/h[1-6]>/i);
         if (!link || !title || seen.has(link[3])) continue;
         seen.add(link[3]);
         results.push({ id:link[3], slug:link[2], title:decode(title[1]), url:BASE+link[1] });
@@ -75,7 +75,7 @@ module.exports = async function animeGoProxy(req, res) {
         const a = attrs(m[0]), embed = a["data-player"], label = a["data-translation-title"], provider = a["data-provider-title"] || "";
         if (!embed || !label) continue;
         let u = embed.startsWith("//") ? "https:"+embed : embed;
-        try { const parsed = new URL(u); if(!/^https?:$/.test(parsed.protocol)) continue; u=parsed.href; } catch (_) { continue; }
+        try { const parsed = new URL(u, BASE); if(!/^https?:$/.test(parsed.protocol)) continue; u=parsed.href; } catch (_) { continue; }
         // Expose only recognized Russian-segment player providers; no arbitrary external providers.
         if (!/aniboom|\bcvh\b|kodik|sibnet/i.test(provider+" "+u)) continue;
         const key = u + "|" + label;
