@@ -34,7 +34,7 @@
       button = document.createElement("button");
       button.id = BUTTON_ID;
       button.type = "button";
-      button.textContent = "Тест нового плеера";
+      button.textContent = "Смотреть в плеере ANIMORA";
       button.setAttribute("aria-label", "Открыть тест нового плеера ANIMORA");
       button.style.cssText = STYLE;
       button.addEventListener("click", function () {
