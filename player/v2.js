@@ -180,7 +180,7 @@ async function animeGoSources(id){
    if(!sr.ok)continue;
    const payload=await sr.json(),rows=apiRows(payload).sort((a,b)=>score(b)-score(a));
    for(const row of rows.filter(x=>score(x)>=2).slice(0,3)){
-    const idValue=String(row.id||"").trim();if(!/^\\d{1,12}$/.test(idValue))continue;
+    const idValue=String(row.id||"").trim();if(!/^\d{1,12}$/.test(idValue))continue;
     const key=idValue+":"+Number(id.ep);if(seen.has(key))continue;seen.add(key);
     const url=new URL("/api/animego/players",location.origin);url.searchParams.set("id",idValue);url.searchParams.set("episode",String(Number(id.ep)));
     const pr=await fetch(url.href,{headers:{Accept:"application/json"},credentials:"same-origin",cache:"no-store"});
@@ -189,6 +189,7 @@ async function animeGoSources(id){
      const embed=urlSafe(item.url);if(!embed)continue;
      const provider=String(item.provider||"AnimeGO");
      const label=String(item.label||"Русская озвучка").trim();
+     if(/субтитр|subtitles?\b|\(sub\)/i.test(label))continue;
      const normalized=source({url:embed,kind:"iframe",label:"AnimeGO · "+label+" · "+provider,provider,language:"ru"},0,"AnimeGO");
      if(normalized)out.push(normalized);
     }
@@ -237,6 +238,6 @@ const ep=p.get("episode")||p.get("ep");$("episode").textContent=ep?"Серия "
 $("back").addEventListener("click",()=>{const ret=p.get("returnTo");if(ret&&ret.startsWith("/")&&!ret.startsWith("//"))location.href=ret;else if(history.length>1)history.back();else location.href="/"});
 $("retry").addEventListener("click",()=>start(Math.max(0,active)));
 $("sourceSelect").addEventListener("change",()=>start(Number($("sourceSelect").value)));
-async function initialise(){loading("Ищем русскую озвучку и доступный видеопоток…");sources=await apiSources();fillSelect();if(!sources.length){error("Не удалось найти доступный русскоязычный поток для этой серии. Зарубежные источники отключены.");$("diagnostic").hidden=false;$("diagnostic").textContent="ANIMORA проверила русскоязычные источники AniLiberty и AnimeVost. Автоматического перехода на зарубежные источники нет.";return}start(0)}
+async function initialise(){loading("Ищем русскую озвучку и доступный видеопоток…");sources=await apiSources();fillSelect();if(!sources.length){error("Не удалось найти доступный русскоязычный поток для этой серии. Зарубежные источники отключены.");$("diagnostic").hidden=false;$("diagnostic").textContent="ANIMORA проверила русскоязычные источники AniLiberty, AnimeVost и AnimeGO. Источники с пометкой «субтитры» и зарубежные резервные источники отключены.";return}start(0)}
 initialise().catch(e=>{console.error("[ANIMORA Player] init failed",e);error("Ошибка при получении источников. Нажмите «Повторить источник».")});
 })();
