@@ -10,6 +10,7 @@ const appCss = fs.readFileSync(ROOT + "/styles.css", "utf8");
 const playerCss = fs.readFileSync(ROOT + "/player/player.css", "utf8");
 const playerJs = fs.readFileSync(ROOT + "/player/player.js", "utf8");
 const playerHtml = fs.readFileSync(ROOT + "/player/player.html", "utf8");
+const playerEngineHtml = fs.readFileSync(ROOT + "/player/v2-engine.html", "utf8");
 const serviceWorker = fs.readFileSync(ROOT + "/service-worker.js", "utf8");
 
 const start = src.indexOf("const PLAYER_POSTER_MAX_LENGTH");
@@ -120,7 +121,7 @@ check("versioned player navigations use the cached shell document",
 check("player libraries warm while the anime detail page is open",
   /function prefetchPlayerShell\(\)[\s\S]*?artplayer@5\.4\.0\/dist\/artplayer\.js[\s\S]*?hls\.js@1\.6\.16/.test(src), true);
 check("direct files do not wait for the HLS library script",
-  /<script async src="https:\/\/cdn\.jsdelivr\.net\/npm\/hls\.js@1\.6\.16/.test(playerHtml), true);
+  /<script async src="https:\/\/cdn\.jsdelivr\.net\/npm\/hls\.js@1\.6\.16/.test(playerEngineHtml), true);
 
 /* ---- a realistic URL stays well under the header limit ---- */
 {
