@@ -25,10 +25,10 @@ function apiRows(payload){
  return payload.release&&typeof payload.release==="object"?[payload.release]:payload.id||payload.alias?[payload]:[];
 }
 function titleKey(value){return String(value||"").toLowerCase().normalize("NFKD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9а-яё]+/gi," ").trim()}
-function releaseNames(item){const n=item&&item.names;return [item?.name,item?.title,item?.names?.ru,item?.names?.en,item?.names?.alternative,item?.alias,item?.code].filter(Boolean)}
+function releaseNames(item){const n=item&&item.name,ns=item&&item.names;return [typeof n==="string"?n:n?.main,n?.english,n?.alternative,typeof item?.title==="string"?item.title:item?.title?.main,ns?.ru,ns?.en,ns?.alternative,item?.alias,item?.code].filter(v=>typeof v==="string"&&v.trim())}
 function episodeNumber(item){
  for(const key of ["episode","number","ordinal","position","sortOrder","sort_order","episodeNumber","episode_number"]){
-  const n=Number(item?.[key]);if(Number.isFinite(n)&&n>0&&n<10000)return n;
+  const raw=item?.[key],n=Number(raw&&typeof raw==="object"?(raw.ordinal??raw.number??raw.episode):raw);if(Number.isFinite(n)&&n>0&&n<10000)return n;
  }
  return null;
 }
