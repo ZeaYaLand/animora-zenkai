@@ -146,13 +146,17 @@ async function animeVostSources(id){
     const items=apiRows(await pr.json());
     for(const item of items){
      const name=String(item?.name||item?.title||"");
-     const match=name.match(/^\s*(\d{1,4})(?:\D|$)/);
+     const match=name.match(/^\s*(\d{1,4})(?:\.\d+)?(?:\D|$)/);
      if(!match||Number(match[1])!==Number(id.ep))continue;
-     const raw=String(item?.hd||item?.url||item?.videoUrl||"").trim();
-     let parsed;try{parsed=new URL(raw)}catch(_){continue}
-     if(!/^https?:$/.test(parsed.protocol)||!(/\.m3u8(?:$|[?#])|\.mp4(?:$|[?#])/i.test(parsed.href)))continue;
-     const normalized=source({url:parsed.href,type:/\.m3u8(?:$|[?#])/i.test(parsed.href)?"hls":"mp4",label:"AnimeVost · русская озвучка",provider:"AnimeVost",language:"ru"},0,"AnimeVost");
-     if(normalized)out.push(normalized);
+     const candidates=[["hd",item?.hd],["sd",item?.sd],["url",item?.url],["videoUrl",item?.videoUrl]];
+     for(const [quality,value] of candidates){
+      const raw=String(value||"").trim();
+      let parsed;try{parsed=new URL(raw)}catch(_){continue}
+      if(!/^https?:$/.test(parsed.protocol)||!(/\\.m3u8(?:$|[?#])|\\.mp4(?:$|[?#])/i.test(parsed.href)))continue;
+      const ext=/\\.m3u8(?:$|[?#])/i.test(parsed.href)?"hls":"mp4";
+      const normalized=source({url:parsed.href,type:ext,label:"AnimeVost · русская озвучка"+(quality==="hd"?" · HD":quality==="sd"?" · SD":""),provider:"AnimeVost",language:"ru"},0,"AnimeVost");
+      if(normalized)out.push(normalized);
+     }
     }
    }
   }catch(e){console.warn("[ANIMORA Player] AnimeVost lookup failed",e)}
@@ -160,7 +164,7 @@ async function animeVostSources(id){
  return dedupe(out);
 }
 async function apiSources(){
- // Playback is restricted to the Russian-language AniLiberty source.
+ // Playback is restricted to the configured Russian-language providers.
  // Legacy URL parameters cannot enable a foreign provider.
  const id=identity();
  if(!id)return[];
@@ -198,6 +202,6 @@ const ep=p.get("episode")||p.get("ep");$("episode").textContent=ep?"Серия "
 $("back").addEventListener("click",()=>{const ret=p.get("returnTo");if(ret&&ret.startsWith("/")&&!ret.startsWith("//"))location.href=ret;else if(history.length>1)history.back();else location.href="/"});
 $("retry").addEventListener("click",()=>start(Math.max(0,active)));
 $("sourceSelect").addEventListener("change",()=>start(Number($("sourceSelect").value)));
-async function initialise(){loading("Ищем русскую озвучку и доступный видеопоток…");sources=await apiSources();fillSelect();if(!sources.length){error("Не удалось найти доступный русскоязычный поток для этой серии. Зарубежные источники отключены.");$("diagnostic").hidden=false;$("diagnostic").textContent="ANIMORA проверила только AniLiberty. Автоматического перехода на зарубежные источники нет.";return}start(0)}
+async function initialise(){loading("Ищем русскую озвучку и доступный видеопоток…");sources=await apiSources();fillSelect();if(!sources.length){error("Не удалось найти доступный русскоязычный поток для этой серии. Зарубежные источники отключены.");$("diagnostic").hidden=false;$("diagnostic").textContent="ANIMORA проверила русскоязычные источники AniLiberty и AnimeVost. Автоматического перехода на зарубежные источники нет.";return}start(0)}
 initialise().catch(e=>{console.error("[ANIMORA Player] init failed",e);error("Ошибка при получении источников. Нажмите «Повторить источник».")});
 })();
