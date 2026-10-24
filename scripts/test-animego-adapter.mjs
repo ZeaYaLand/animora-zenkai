@@ -16,21 +16,23 @@ test("AnimeGO search IDs are validated as digits, not literal backslash-d", () =
   assert.ok(!player.includes('if(!/^\\\\d{1,12}$/.test(idValue))'));
 });
 
-test("player uses only configured Russian source adapters and has a bounded wait", () => {
-  assert.match(player, /aniLibertySources\\(id\\)/);
-  assert.match(player, /animeVostSources\\(id\\)/);
-  assert.match(player, /animeGoSources\\(id\\)/);
-  assert.match(player, /deadline\\(aniLibertySources\\(id\\),12000\\)/);
-  assert.match(player, /субтитр|subtitles?\\b/);
-  assert.match(player, /зарубежные источники отключены/);
+test("all Russian adapters are queried concurrently with a deadline", () => {
+  for (const adapter of ["aniLibertySources(id)", "animeVostSources(id)", "animeGoSources(id)"]) {
+    assert.ok(player.includes(adapter), "missing adapter: " + adapter);
+  }
+  assert.ok(player.includes("deadline(aniLibertySources(id),12000)"));
+  assert.ok(player.includes("deadline(animeVostSources(id),12000)"));
+  assert.ok(player.includes("deadline(animeGoSources(id),12000)"));
+  assert.ok(player.includes("/субтитр|subtitles?\\b|\\(sub\\)/i"));
+  assert.ok(player.includes("зарубежные источники отключены"));
 });
 
-test("AnimeGO proxy only exposes recognized embed providers", () => {
-  assert.ok(animeGo.includes("/aniboom|\\\\bcvh\\\\b|kodik|sibnet/i"));
+test("AnimeGO proxy limits results to recognized embed providers", () => {
+  assert.ok(animeGo.includes("/aniboom|\\bcvh\\b|kodik|sibnet/i"));
   assert.ok(animeGo.includes('kind:"iframe"'));
-  assert.match(animeGo, /Unsupported AnimeGO endpoint/);
+  assert.ok(animeGo.includes("Unsupported AnimeGO endpoint"));
 });
 
 test("player page busts the old cached JavaScript", () => {
-  assert.match(page, /\\/player\\/v2\\.js\\?v=13/);
+  assert.ok(page.includes("/player/v2.js?v=13"));
 });
