@@ -86,6 +86,7 @@
     <script defer src="js/source-classification.js?v=1024"></script>
     <script defer src="client.js?v=1024"></script>
     <script defer src="js/player-v2-test-link.js?v=3"></script>
+    <script defer src="js/player-route-bridge.js?v=1"></script>
   </head>
   <body>
     <script>(function(){var p=location.pathname.replace(/\/+$/,"")||"/";var h=(location.hash||"").replace(/^#/,"");var r=p==="/search"||p==="/browse"||/^\/(genre|year|season|studio)\//.test(p)?"library":p==="/schedule"?"schedule":p==="/releases"?"releases":p==="/favorites"?"favorites":p==="/settings"?"settings":p==="/sources"?"sources":p==="/profile"||p==="/login"?"profile":"home";var m={search:"library",browse:"library",library:"library",home:"home",schedule:"schedule",releases:"releases",favorites:"favorites",settings:"settings",sources:"sources",profile:"profile"};if(p==="/"&&m[h])r=m[h];document.body.dataset.route=r;try{if(localStorage.getItem("animetv-sidebar-collapsed")!=="false")document.body.classList.add("sidebar-collapsed")}catch(e){document.body.classList.add("sidebar-collapsed")}})()</script>
