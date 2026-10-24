@@ -9780,10 +9780,10 @@ function renderSettings() {
           <span>Автозапуск на главной <small>Автоматически запускать трейлер на главном экране</small></span>
           <button class="settings-switch focusable ${ui.autoplayHero ? "is-on" : ""}" data-toggle-pref="autoplayHero" type="button"><b></b></button>
         </div>
-        <div class="settings-line">
-          <span>Перевод субтитров <small>Автоматический перевод доступных субтитров во время просмотра</small></span>
+        ${language === "es" ? `<div class="settings-line">
+          <span>Traducción de subtítulos <small>Traducir los subtítulos disponibles al español durante la reproducción</small></span>
           <button class="settings-switch focusable ${ui.subtitleTranslation ? "is-on" : ""}" data-toggle-pref="subtitleTranslation" type="button"><b></b></button>
-        </div>
+        </div>` : ""}
         <div class="settings-line">
           <span>Подробная информация <small>Показывать статус, рейтинг и данные источника в карточке аниме</small></span>
           <button class="settings-switch focusable ${ui.metadataDetail ? "is-on" : ""}" data-toggle-pref="metadataDetail" type="button"><b></b></button>
