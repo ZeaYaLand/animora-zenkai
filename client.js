@@ -20290,9 +20290,30 @@ async function runActivePlaybackAttempt(options = {}, playbackContext) {
       }
     }
     if (!reliableSource) {
+      // Some providers expose a playable page rather than a direct media URL.
+      // Their page cannot pass the direct HLS/segment health probe, so allow the
+      // existing resolver/embed handoff to try eligible ad-free iframe candidates
+      // before declaring that the entire episode has no source.
+      const unverifiedEmbed = getEpisodePlaybackSources(activeEpisode)
+        .filter((candidate) => !activeEpisode._failedSourceIds?.has(candidate.id))
+        .filter(isAdFreeFallbackCandidate)
+        .find((candidate) => (
+          candidate.type === "iframe"
+          && /^https?:\/\//i.test(candidate.externalUrl || "")
+          && !isBlockedPlaybackUrl(candidate.externalUrl)
+        ));
+      if (unverifiedEmbed) {
+        console.warn("[Playback] No direct source passed verification; trying eligible embed resolver.", {
+          provider: unverifiedEmbed.provider || unverifiedEmbed.label || "unknown"
+        });
+        selectEpisodePlaybackSource(activeEpisode, unverifiedEmbed.id);
+        reliableSource = unverifiedEmbed;
+      }
+    }
+    if (!reliableSource) {
       renderPlaybackError(frame, activeEpisode, {
         title: "Playback source unavailable",
-        message: "No verified ad-free source responded for this episode. Retry to check AnimeAV1, TioAnime, and JKAnime again."
+        message: "No verified direct stream or eligible embed source responded for this episode. Retry to check the available providers again."
       });
       return;
     }
