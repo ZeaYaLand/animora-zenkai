@@ -208,7 +208,7 @@ async function apiSources(){
 }
 function loading(text,title){$("loading").hidden=false;$("error").hidden=true;$("loadingText").textContent=text||"Проверяем доступность видео";$("loadingTitle").textContent=title||"Подключаем источник…"}
 function error(text){$("loading").hidden=true;$("error").hidden=false;$("errorText").textContent=text}
-function isEmbed(s){return /iframe|embed/i.test(s.kind)||/\/embed\/|\/player\/|\.html(?:$|[?#])/i.test(s.url)}
+function isEmbed(s){return /iframe|embed/i.test(s.kind)||/\/embed\/|\/cdn-iframe\/|kodikplayer\.com\/|video\.sibnet\.ru\/|\/player\/|\.html(?:$|[?#])/i.test(s.url)}
 function engineUrl(s){const u=new URL("/player/v2-engine.html",location.origin);u.searchParams.set("src",s.url);u.searchParams.set("title",p.get("title")||p.get("name")||"Просмотр аниме");u.searchParams.set("episode",p.get("episode")||p.get("ep")||"");u.searchParams.set("type",s.type||(/\.m3u8(?:$|[?#])/i.test(s.url)?"m3u8":""));u.searchParams.set("sources",String(sources.length));if(s.poster)u.searchParams.set("poster",s.poster);for(const k of ["subtitle","tracks","returnTo","hasNext","start","fit"])if(p.get(k))u.searchParams.set(k,p.get(k));return u.href}
 function start(index){
  if(!sources.length)return;active=Math.max(0,Math.min(index,sources.length-1));const my=++attempt,s=sources[active];$("sourceSelect").value=String(active);
