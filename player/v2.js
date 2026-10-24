@@ -18,7 +18,7 @@ function identity(){const explicit=p.get("slug")||p.get("anime")||p.get("animeSl
 function apiRows(payload){
  if(Array.isArray(payload))return payload;
  if(!payload||typeof payload!=="object")return[];
- for(const key of ["data","items","results","releases","list","entries"])if(Array.isArray(payload[key]))return payload[key];
+ for(const key of ["data","items","results","releases","list","entries","players"])if(Array.isArray(payload[key]))return payload[key];
  if(payload.data&&typeof payload.data==="object")for(const key of ["items","results","releases","list","entries"])if(Array.isArray(payload.data[key]))return payload.data[key];
  return payload.release&&typeof payload.release==="object"?[payload.release]:payload.id||payload.alias?[payload]:[];
 }
