@@ -11,7 +11,7 @@ function source(item,i,provider){
  const u=url(direct||embed);if(!u)return null;
  const type=String(item.type||item.format||(String(item.provider||"").toUpperCase()==="HLS"?"hls":"")).toLowerCase();
  const kind=String(item.kind||item.mode||(!direct&&embed||/iframe|embed/i.test(type)?"iframe":"")).toLowerCase();
- return {url:u,type,kind,label:String(item.label||item.name||item.provider||provider||("Источник "+(i+1))),poster:url(item.poster||item.thumbnail||p.get("poster")||"")};
+ return {url:u,type,kind,label:String(item.label||item.name||item.provider||provider||("Источник "+(i+1))),provider:String(item.provider||provider||""),language:String(item.language||""),poster:url(item.poster||item.thumbnail||p.get("poster")||"")};
 }
 function dedupe(list){const seen=new Set();return list.filter(Boolean).filter(s=>!seen.has(s.url)&&seen.add(s.url))}
 function identity(){const explicit=p.get("slug")||p.get("anime")||p.get("animeSlug"),id=p.get("animeId")||p.get("id"),title=p.get("title")||p.get("name"),slug=explicit||(id&&!/^\d+$/.test(id.trim())?id:"")||title,ep=p.get("episode")||p.get("ep")||p.get("episodeNumber");return slug&&ep?{slug:slug.trim(),ep:ep.trim()}:null}
