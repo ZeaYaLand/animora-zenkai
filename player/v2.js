@@ -64,7 +64,7 @@ function mediaUrls(node){
  walk(node);return found;
 }
 async function aniLibertySources(id){
- const title=p.get("title")||p.get("name")||id.slug,queries=[title,id.slug].filter((v,i,a)=>v&&a.indexOf(v)===i);
+ const title=p.get("title")||p.get("name")||id.slug,queries=[title,id.slug].filter((v,i,a)=>v&&a.indexOf(v)===i),out=[];
  for(const query of queries){
   try{
    const search=new URL("/api/aniliberty/app/search/releases",location.origin);search.searchParams.set("query",query);search.searchParams.set("limit","20");
@@ -91,13 +91,13 @@ async function aniLibertySources(id){
       const quality=item.label&&/^\d+$/.test(item.label)?" · "+item.label+"p":"";
       const dub=teamLabel?" · "+teamLabel:"";
       const normalized=source({...item,label:"AniLiberty · русская озвучка"+dub+quality,provider:"AniLiberty"},0,"AniLiberty");
-      if(normalized) return [normalized];
+      if(normalized) out.push(normalized);
      }
     }
    }
   }catch(e){console.warn("[ANIMORA Player] AniLiberty lookup failed",e)}
  }
- return[];
+ return dedupe(out);
 }
 async function apiSources(){
  const id=identity();if(!id)return[];const asked=(p.get("api")||p.get("sourceApi")||"").toLowerCase(),providers=asked?[asked]:["aniliberty"],out=[];
