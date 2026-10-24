@@ -52,7 +52,7 @@
     // they are non-numeric. Direct source URLs passed by the existing catalog still work.
     const explicitSlug = params.get("slug") || params.get("anime");
     const idFallback = params.get("animeId") || params.get("id");
-    const slug = explicitSlug || (idFallback && !/^\\d+$/.test(idFallback.trim()) ? idFallback : "");
+    const slug = explicitSlug || (idFallback && !/^\d+$/.test(idFallback.trim()) ? idFallback : "");
     const episode = params.get("episode") || params.get("ep") || params.get("episodeNumber");
     return slug && episode ? { slug: slug.trim(), episode: episode.trim() } : null;
   }
