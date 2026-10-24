@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { createRequire } from "node:module";
 
 // Match the application's same-origin /api/source relay predicate.
 globalThis.isLocalSourceProxyUrl = (value = "") => {
@@ -11,7 +12,8 @@ globalThis.isLocalSourceProxyUrl = (value = "") => {
   }
 };
 
-const classification = await import("../js/source-classification.js");
+const require = createRequire(import.meta.url);
+const classification = require("../js/source-classification.js");
 
 test("a direct blocked upstream media URL remains blocked", () => {
   assert.equal(classification.isBlockedPlaybackSource({
