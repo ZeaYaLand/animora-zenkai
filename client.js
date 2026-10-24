@@ -341,7 +341,7 @@ const state = {
   },
   sourceOverrides: JSON.parse(localStorage.getItem("animetv-source-overrides") || "{}"),
   favorites: readFavoriteIds(),
-  appLanguage: localStorage.getItem(APP_LANGUAGE_KEY) || "en",
+  appLanguage: localStorage.getItem(APP_LANGUAGE_KEY) || "ru",
   theme: localStorage.getItem(APP_THEME_KEY) || "dark",
   uiPreferences: readUiPreferences(),
   currentRouteInfo: null,
@@ -9674,6 +9674,7 @@ function renderSettings() {
         <div class="settings-line">
           <span>${t("appLanguage")}</span>
           <div class="settings-row settings-segment">
+            <button class="settings-choice focusable ${language === "ru" ? "is-selected" : ""}" data-app-language="ru">Русский</button>
             <button class="settings-choice focusable ${language === "en" ? "is-selected" : ""}" data-app-language="en">${t("english")}</button>
             <button class="settings-choice focusable ${language === "es" ? "is-selected" : ""}" data-app-language="es">${t("spanish")}</button>
           </div>
