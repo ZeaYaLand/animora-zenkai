@@ -1,86 +1,24 @@
 <!doctype html>
-<html lang="en">
+<html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="color-scheme" content="dark">
-  <title>ANIMORA Player</title>
-  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-  <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
-  <link rel="stylesheet" href="/player/player.css?v=1024">
-  <script defer src="https://cdn.jsdelivr.net/npm/artplayer@5.4.0/dist/artplayer.js"></script>
-  <!-- HLS downloads in parallel but no longer blocks player.js from starting.
-       waitForLibraries() already gates HLS streams until this is ready, while
-       direct MP4/WebM episodes can initialize as soon as ArtPlayer arrives. -->
-  <script async src="https://cdn.jsdelivr.net/npm/hls.js@1.6.16/dist/hls.min.js"></script>
-  <!-- Chromecast is driven directly by the Google Cast Web Sender framework in
-       player.js. The artplayer plugin used to do this, but it assigned
-       window.__onGCastApiAvailable at CLICK time and loaded the SDK then too, so
-       cast state was unknowable until after the first press and every failure
-       collapsed into one opaque callback. -->
-  <script defer src="/player/player.js?v=1024"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="robots" content="noindex">
+  <title>ANIMORA — переход к плееру</title>
+  <script>
+    (function () {
+      "use strict";
+      // Keep every playback parameter from the existing app/player launch URL.
+      // This makes the new player the default without rewriting source integrations.
+      var target = new URL("/player/v2.html", location.origin);
+      target.search = location.search;
+      target.hash = location.hash;
+      location.replace(target.href);
+    })();
+  </script>
 </head>
 <body>
-  <main class="ztv-player-page">
-    <div class="ztv-backdrop" id="playerBackdrop" aria-hidden="true"></div>
-    <!-- An overlay, not a row: it floats over the picture on a gradient that
-         fades out downward, so opening or collapsing it never resizes the video.
-         The back and toggle buttons below are NOT inside it - they keep the same
-         coordinates in both states, so nothing jumps when you toggle. -->
-    <header class="ztv-player-topbar" id="playerTopbar">
-      <div class="ztv-title-block">
-        <p class="ztv-kicker" id="episodeLabel">ANIMORA</p>
-        <h1 id="playerTitle">Video Player</h1>
-      </div>
-      <!-- Mascot lives in the empty middle of the bar. Purely decorative:
-           aria-hidden, pointer-events:none, and it removes itself if the sprite
-           files are absent, so the bar is unchanged until they are added. -->
-      <div class="ztv-mascot" id="ztvMascot" aria-hidden="true">
-        <img class="ztv-mascot-frame" id="ztvMascotFrame" alt="" decoding="async">
-      </div>
-      <div class="ztv-player-brand" aria-label="ANIMORA">
-        <span class="ztv-brand-wordmark">ANIMORA</span>
-        <img class="ztv-brand-mark" src="/animora-logo.svg" alt="" aria-hidden="true">
-      </div>
-    </header>
-
-    <!-- Persistent chrome. These two sit outside the header on purpose: they hold
-         the SAME top-left / top-right corners whether the bar is open or
-         collapsed, so the toggle never moves out from under your finger and back
-         is always reachable. -->
-    <button class="ztv-corner-button ztv-corner-back" id="backButton" type="button" aria-label="Go back">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m14 6-6 6 6 6"></path></svg>
-    </button>
-    <button class="ztv-corner-button ztv-corner-toggle" id="chromeToggle" type="button" aria-label="Hide the title bar" aria-expanded="true">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 15 6-6 6 6"></path></svg>
-    </button>
-
-    <!-- Compact stand-in for the title while the bar is collapsed, on the same
-         line as the back button rather than over the picture below it. -->
-    <p class="ztv-floating-label" id="floatingLabel" hidden>
-      <span class="ztv-floating-ep" id="floatingEpisode"></span>
-      <span class="ztv-floating-title" id="floatingTitle"></span>
-    </p>
-
-    <section class="ztv-player-shell" aria-label="Video player">
-      <div id="player" class="ztv-artplayer"></div>
-      <div class="ztv-loading" id="loadingState" aria-live="polite">
-        <div class="ztv-loader-mark" aria-hidden="true">
-          <span></span>
-          <span></span>
-        </div>
-        <strong>Loading stream...</strong>
-      </div>
-      <div class="ztv-error" id="errorState" role="alert" hidden>
-        <div class="ztv-error-play" aria-hidden="true"></div>
-        <strong id="errorTitle">No video source</strong>
-        <p id="errorMessage">Choose a playable server and try again.</p>
-        <div class="ztv-error-actions">
-          <button class="ztv-primary-button" id="retryButton" type="button">Retry</button>
-          <button class="ztv-secondary-button" id="homeButton" type="button">Home</button>
-        </div>
-      </div>
-    </section>
-  </main>
+  <p>Открываем плеер ANIMORA…</p>
+  <noscript><a href="/player/v2.html">Открыть новый плеер ANIMORA</a></noscript>
 </body>
 </html>
