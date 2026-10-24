@@ -73,7 +73,7 @@ module.exports = async function animeGoProxy(req, res) {
       const players = [], seen = new Set();
       for (const m of content.matchAll(/<button\b[^>]*>/gi)) {
         const a = attrs(m[0]), embed = a["data-player"], label = a["data-translation-title"], provider = a["data-provider-title"] || "";
-        if (!embed || !label || /субтитр|subtitles?\\b|\\bsub\\b|\\(sub\\)/i.test(label)) continue;
+        if (!embed || !label || /субтитр|subtitles?\b|\bsub\b|\(sub\)/i.test(label)) continue;
         let u = embed.startsWith("//") ? "https:"+embed : embed;
         try { const parsed = new URL(u, BASE); if(!/^https?:$/.test(parsed.protocol)) continue; u=parsed.href; } catch (_) { continue; }
         // Expose only recognized Russian-segment player providers; no arbitrary external providers.
