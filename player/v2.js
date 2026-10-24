@@ -14,8 +14,6 @@ function source(item,i,provider){
  return {url:u,type,kind,label:String(item.label||item.name||item.provider||provider||("Источник "+(i+1))),poster:url(item.poster||item.thumbnail||p.get("poster")||"")};
 }
 function dedupe(list){const seen=new Set();return list.filter(Boolean).filter(s=>!seen.has(s.url)&&seen.add(s.url))}
-function isRussianSource(item){const text=[item&&item.provider,item&&item.label,item&&item.name,item&&item.voice,item&&item.dub,item&&item.language,item&&item.lang].filter(Boolean).join(" ").toLowerCase();return /ani.?liberty|anilibria|anilibria\.app|anidub|studio\s*band|shiza|animevost|animedia|dreamcast|amb|русск|russian|\bru\b|\bru-ru\b/.test(text)}
-function directSources(){const out=[],direct=p.get("src")||p.get("url")||p.get("videoUrl")||p.get("file"),provider=p.get("provider")||"",meta={provider,label:provider||"",language:p.get("language")||p.get("lang")||"",voice:p.get("voice")||p.get("dub")||""};if(direct&&isRussianSource(meta))out.push(source({url:direct,type:p.get("type"),label:provider||"Русский источник"},0));for(const k of ["sources","fallbacks","alternatives"])for(const x of parse(p.get(k)))if(isRussianSource(x))out.push(source(x,out.length));return dedupe(out)}
 function identity(){const explicit=p.get("slug")||p.get("anime")||p.get("animeSlug"),id=p.get("animeId")||p.get("id"),title=p.get("title")||p.get("name"),slug=explicit||(id&&!/^\d+$/.test(id.trim())?id:"")||title,ep=p.get("episode")||p.get("ep")||p.get("episodeNumber");return slug&&ep?{slug:slug.trim(),ep:ep.trim()}:null}
 function apiRows(payload){
  if(Array.isArray(payload))return payload;
