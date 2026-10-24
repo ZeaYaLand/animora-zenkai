@@ -95,14 +95,21 @@
       return;
     }
     if (isHls(s) && window.Hls && Hls.isSupported()) {
-      hls = new Hls({ enableWorker: true, lowLatencyMode: false, manifestLoadingTimeOut: 15000, fragLoadingTimeOut: 20000 });
+      let networkRetries = 0;
+      hls = new Hls({ enableWorker: true, lowLatencyMode: false, manifestLoadingTimeOut: 15000, fragLoadingTimeOut: 20000, manifestLoadingMaxRetry: 1, fragLoadingMaxRetry: 1 });
       hls.on(Hls.Events.MANIFEST_PARSED, () => { if (token !== attemptToken) return; loading.hidden = true; video.play().catch(() => {}); });
       hls.on(Hls.Events.ERROR, (_event, data) => {
         if (token !== attemptToken || !data || !data.fatal) return;
         console.warn("[ANIMORA Player 2] HLS fatal error", data.type, data.details);
-        if (data.type === Hls.ErrorTypes.NETWORK_ERROR && hls) hls.startLoad();
-        else if (data.type === Hls.ErrorTypes.MEDIA_ERROR && hls) hls.recoverMediaError();
-        else playAt(index + 1, token);
+        if (data.type === Hls.ErrorTypes.NETWORK_ERROR && hls && networkRetries < 2) {
+          networkRetries += 1;
+          hls.startLoad();
+        } else if (data.type === Hls.ErrorTypes.MEDIA_ERROR && hls) {
+          hls.recoverMediaError();
+        } else {
+          // Do not get stuck retrying a broken manifest or missing segments forever.
+          playAt(index + 1, token);
+        }
       });
       hls.loadSource(s.url); hls.attachMedia(video); return;
     }
