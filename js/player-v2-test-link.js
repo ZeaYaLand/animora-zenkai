@@ -45,7 +45,8 @@
         target.searchParams.set("episode", current.episode);
         target.searchParams.set("title", current.id.replace(/[-_]+/g, " "));
         target.searchParams.set("test", "1");
-        window.open(target.href, "_blank");
+        // Navigate in the same tab: mobile browsers may block window.open() from injected SPA buttons.
+        location.assign(target.href);
       });
       document.body.appendChild(button);
     } else {
