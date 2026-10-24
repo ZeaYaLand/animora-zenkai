@@ -41,6 +41,7 @@ function matchingEpisodeNodes(release,wanted){
   }
   if(Array.isArray(node)){for(const x of node)walk(x,depth+1);return}
   for(const [key,val] of Object.entries(node)){
+   if(/^\\d+(?:\\.\\d+)?$/.test(key)&&Number(key)===wanted&&val&&typeof val==="object"){found.push(val);walk(val,depth+1);continue}
    if(val&&typeof val==="object"){walk(val,depth+1);continue}
    if(typeof val==="string"&&/^\\d+(?:\\.\\d+)?$/.test(key)&&Number(key)===wanted&&val.length>10){found.push({episode:wanted,url:val})}
   }
@@ -79,7 +80,7 @@ async function aniLibertySources(id){
     if(alias==null)continue;
     let release=row;
     const detail=new URL("/api/aniliberty/anime/releases/"+encodeURIComponent(String(alias)),location.origin);
-    try{const dr=await fetch(detail.href,{headers:{Accept:"application/json"},credentials:"same-origin",cache:"no-store"});if(dr.ok){const dp=await dr.json();release=dp?.data||dp?.release||dp}}catch(_){}
+    try{const dr=await fetch(detail.href,{headers:{Accept:"application/json"},credentials:"same-origin",cache:"no-store"});if(dr.ok){const dp=await dr.json();release=dp?.data?.release||dp?.data||dp?.release||dp}}catch(_){}
     const epNodes=matchingEpisodeNodes(release,Number(id.ep));
     for(const node of epNodes){
      const media=mediaUrls(node);
