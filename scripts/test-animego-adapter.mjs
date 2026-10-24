@@ -24,7 +24,7 @@ test("all Russian adapters are queried concurrently with a deadline", () => {
   assert.ok(player.includes("deadline(aniLibertySources(id),12000)"));
   assert.ok(player.includes("deadline(animeVostSources(id),12000)"));
   assert.ok(player.includes("deadline(animeGoSources(id),12000)"));
-  assert.ok(player.includes("/субтитр|subtitles?\\b|\\(sub\\)/i"));
+  assert.ok(player.includes("/субтитр|subtitles?\\b|\\bsub\\b|\\(sub\\)/i"));
   assert.ok(player.includes("Зарубежные источники отключены"));
 });
 
