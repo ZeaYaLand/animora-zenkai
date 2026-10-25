@@ -38,14 +38,25 @@ function isBlockedPlaybackUrl(value = "") {
 
 function isBlockedPlaybackSource(source = {}) {
   const urls = [source.videoUrl, source.externalUrl, source.url, source.href].filter(Boolean);
+  const primaryPlaybackUrl = source.videoUrl || source.externalUrl || source.url || source.href || "";
+  const primaryIsLocalRelay = isLocalSourceProxyUrl(primaryPlaybackUrl);
+
+  // A relayed URL is the actual playback target. Resolver metadata and
+  // secondary URL fields can retain the upstream host after its media URL has
+  // been rewritten to /api/source. Judge the URL the player will actually load,
+  // not stale metadata about the upstream host.
   const identitySource = {
     ...source,
-    videoUrl: isLocalSourceProxyUrl(source.videoUrl) ? "" : source.videoUrl,
-    externalUrl: isLocalSourceProxyUrl(source.externalUrl) ? "" : source.externalUrl,
-    url: isLocalSourceProxyUrl(source.url) ? "" : source.url,
-    href: isLocalSourceProxyUrl(source.href) ? "" : source.href
+    videoUrl: primaryIsLocalRelay || isLocalSourceProxyUrl(source.videoUrl) ? "" : source.videoUrl,
+    externalUrl: primaryIsLocalRelay || isLocalSourceProxyUrl(source.externalUrl) ? "" : source.externalUrl,
+    url: primaryIsLocalRelay || isLocalSourceProxyUrl(source.url) ? "" : source.url,
+    href: primaryIsLocalRelay || isLocalSourceProxyUrl(source.href) ? "" : source.href,
+    siteUrl: primaryIsLocalRelay && isBlockedPlaybackUrl(source.siteUrl) ? "" : source.siteUrl,
+    streamResolver: primaryIsLocalRelay && isBlockedPlaybackUrl(source.streamResolver?.endpoint)
+      ? { ...source.streamResolver, endpoint: "" }
+      : source.streamResolver
   };
-  return urls.some((url) => !isLocalSourceProxyUrl(url) && isBlockedPlaybackUrl(url))
+  return (!primaryIsLocalRelay && urls.some((value) => !isLocalSourceProxyUrl(value) && isBlockedPlaybackUrl(value)))
     || /\b(?:candy\.ai|player\.zilla-networks\.com)\b/i.test(sourceIdentityText(identitySource));
 }
 
@@ -252,24 +263,25 @@ function isActivePlaybackSource(source = {}, episode = {}) {
   return String(source.videoUrl || "") === String(playable);
 }
 
+function isRussianCatalogSource(source = {}) {
+  // Strict allowlist: only the Russian-language AniLiberty/Anilibria catalog.
+  // Do not let generic direct/HLS links or legacy foreign scrapers re-enter the picker.
+  const identity = sourceIdentityText(source);
+  const language = String(source.language || source.lang || source.audioLanguage || source.dubLanguage || "").toLowerCase();
+  return /aniliberty|anilibria/.test(identity)
+    && (!language || /^(ru|rus|russian|русский|русская|русское|русские)$/.test(language));
+}
+
 function getEpisodePlaybackSources(episode = {}) {
   return orderSourceOptions(normalizeEpisodeSourceOptions(episode).filter((source) => (
-    !isBlockedPlaybackSource(source)
-    && (
-      isAnimeAv1Source(source)
-      || isAnimeYTSource(source)
-      || isAnimeNeonSource(source)
-      || isJKAnimeSource(source)
-      || isTioAnimeSource(source)
-      || isAdultFallbackSource(source)
-      || isActivePlaybackSource(source, episode)
-    )
+    !isBlockedPlaybackSource(source) && isRussianCatalogSource(source)
   )));
 }
 
 if (typeof module !== "undefined" && module.exports) {
   module.exports = {
     sourceIdentityText,
+    isRussianCatalogSource,
     isBlockedPlaybackUrl,
     isBlockedPlaybackSource,
     isPreferredAdultSource,

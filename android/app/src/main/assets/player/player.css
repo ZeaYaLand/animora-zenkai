@@ -191,15 +191,14 @@ body.ztv-controls-hidden .ztv-floating-label {
 
 .ztv-brand-wordmark {
   display: block;
-  /* Sized so the "ZenkaiTV" LETTERING matches the episode title's lettering.
-     Measured from the file: the text occupies only 59px of its 148px height
-     (ratio 0.399) because the bolt glyph is much taller, so matching the box to
-     the title line box rendered the words at 10px against 22px of title text.
-     Multiplying the title's own font-size clamp by 1/0.399 (~2.5) makes the two
-     read at the same size at every viewport. */
   width: auto;
-  height: calc(clamp(1rem, 2.2vw, 1.35rem) * 2.5);
-  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.45));
+  height: auto;
+  color: var(--ztv-text);
+  font-size: clamp(1rem, 2.2vw, 1.35rem);
+  font-weight: 850;
+  letter-spacing: 0.1em;
+  line-height: 1;
+  text-shadow: 0 4px 12px rgba(0, 0, 0, 0.45);
 }
 
 .ztv-brand-mark {

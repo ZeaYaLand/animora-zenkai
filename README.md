@@ -1,13 +1,11 @@
-# ZenkaiTV
-
-![ZenkaiTV banner](docs/branding/zenkai-banner.png)
+# ANIMORA
 
 <p align="center">
   <strong>A responsive anime catalog and player for the web, phones, tablets, Android, and Android TV.</strong>
 </p>
 
 <p align="center">
-  <a href="https://zenkaitv.com"><strong>Open ZenkaiTV</strong></a>
+  <a href="https://animora-zenkai.vercel.app"><strong>Open ANIMORA</strong></a>
   &nbsp;|&nbsp;
   <a href="docs/INSTALLATION.md">Install</a>
   &nbsp;|&nbsp;
@@ -20,7 +18,7 @@
 
 <p align="center">
   <a href="https://github.com/JSolanoDev/AnimeTV/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/JSolanoDev/AnimeTV/actions/workflows/ci.yml/badge.svg"></a>
-  <a href="https://zenkaitv.com"><img alt="Live site" src="https://img.shields.io/badge/live-zenkaitv.com-12b8c4?style=flat-square"></a>
+  <a href="https://animora-zenkai.vercel.app"><img alt="Live site" src="https://img.shields.io/badge/live-ANIMORA-12b8c4?style=flat-square"></a>
   <img alt="Node.js 20 or newer" src="https://img.shields.io/badge/Node.js-20%2B-339933?style=flat-square&logo=node.js&logoColor=white">
   <img alt="Web, Android, and TV" src="https://img.shields.io/badge/platform-Web%20%7C%20Android%20%7C%20TV-6750e8?style=flat-square">
   <a href="LICENSE"><img alt="MIT license" src="https://img.shields.io/badge/license-MIT-20242b?style=flat-square"></a>
@@ -29,13 +27,13 @@
 ## Preview
 
 <p align="center">
-  <a href="docs/screenshots/home-desktop.webp"><img alt="ZenkaiTV desktop home screen" src="docs/screenshots/home-desktop.webp" width="100%"></a>
+  <a href="docs/screenshots/home-desktop.webp"><img alt="ANIMORA desktop home screen" src="docs/screenshots/home-desktop.webp" width="100%"></a>
 </p>
 
 <table>
   <tr>
-    <td width="70%"><a href="docs/screenshots/anime-details.webp"><img alt="ZenkaiTV anime details screen" src="docs/screenshots/anime-details.webp"></a></td>
-    <td width="30%"><a href="docs/screenshots/home-mobile.webp"><img alt="ZenkaiTV mobile home screen" src="docs/screenshots/home-mobile.webp"></a></td>
+    <td width="70%"><a href="docs/screenshots/anime-details.webp"><img alt="ANIMORA anime details screen" src="docs/screenshots/anime-details.webp"></a></td>
+    <td width="30%"><a href="docs/screenshots/home-mobile.webp"><img alt="ANIMORA mobile home screen" src="docs/screenshots/home-mobile.webp"></a></td>
   </tr>
   <tr>
     <td align="center"><sub>Full metadata, artwork, seasons, and episodes</sub></td>
@@ -43,7 +41,9 @@
   </tr>
 </table>
 
-## What ZenkaiTV includes
+## What ANIMORA includes
+
+ANIMORA is an independent rebrand and ongoing adaptation of the MIT-licensed AnimeTV project. Original upstream attribution and the LICENSE file are preserved.
 
 - **Recent-release home screen** with a daily carousel, high-resolution artwork, blur-until-ready loading, and fast manual navigation.
 - **Smart anime search** with typo tolerance, alternate-title matching, franchise grouping, and natural ordering so original seasons appear before sequels.
@@ -60,7 +60,7 @@
 
 ## Performance and reliability
 
-ZenkaiTV is designed to avoid scaling upstream traffic one-to-one with visitors:
+ANIMORA is designed to avoid scaling upstream traffic one-to-one with visitors:
 
 - Vercel CDN caching and stale-while-revalidate for shared catalog and metadata routes.
 - In-flight request coalescing for identical upstream work.
@@ -163,10 +163,10 @@ See the [deployment guide](docs/DEPLOY.md) for Vercel configuration, optional en
 
 ## Privacy and legal
 
-ZenkaiTV is a catalog browser and media player. It does not host or store copyrighted video. Playback is supplied by third-party sources configured by the operator, who is responsible for using those sources lawfully. Favorites, history, and resume state are stored on the user's device.
+ANIMORA is a catalog browser and media player. It does not host or store copyrighted video. Playback is supplied by third-party sources configured by the operator, who is responsible for using those sources lawfully. Favorites, history, and resume state are stored on the user's device.
 
 ## License
 
-[MIT](LICENSE) Copyright ZenkaiTV contributors.
+[MIT](LICENSE) Copyright ANIMORA contributors.
 
 <p align="center"><sub>Metadata is enriched with AniList, Jikan, and TMDB.</sub></p>

@@ -8068,17 +8068,28 @@ function parseJkUrl(rawUrl) {
 }
 
 async function handleJKAnimeHealth(response) {
-  // Actually test connectivity to JKAnime instead of blindly returning ok:true.
+  // Many content sites reject HEAD requests even while normal page requests
+  // work. Probe with GET so this endpoint reflects the same access pattern as
+  // the episode scraper, and expose the upstream status for diagnosis.
   let reachable = false;
+  let upstreamStatus = 0;
+  let error = "";
   try {
-    const probe = await fetchWithTimeout(JK_BASE, { method: "HEAD", headers: JK_HEADERS }, 5000);
+    const probe = await fetchWithTimeout(JK_BASE, { headers: JK_HEADERS }, HOSTED_RUNTIME ? 7000 : 9000);
+    upstreamStatus = Number(probe.status) || 0;
     reachable = probe.ok;
-  } catch { /* unreachable */ }
+    try { await probe.body?.cancel?.(); } catch { /* body may already be closed */ }
+    if (!reachable) error = `JKAnime homepage returned HTTP ${upstreamStatus}.`;
+  } catch (cause) {
+    error = String(cause?.message || cause || "JKAnime request failed.");
+  }
   sendJson(response, {
     ok: reachable,
     source: "JKAnime direct scraper",
     baseUrl: JK_BASE,
     hosted: HOSTED_RUNTIME,
+    upstreamStatus,
+    ...(error ? { error } : {}),
     cachedEpisodeSources: jkAnimeSourceCache.size
   });
 }

@@ -74,7 +74,7 @@ const SmartSource = {
     const url = ssNormalizeUrl(input);
     if (!url) return { type: "unknown", url: String(input || ""), suggestion: "Enter a valid http(s) link." };
     if (this.isUnsupported(url)) {
-      return { type: "unsupported", url, suggestion: `${ssDomain(url)} is a streaming platform ZenkaiTV can't crawl.` };
+      return { type: "unsupported", url, suggestion: `${ssDomain(url)} is a streaming platform ANIMORA can't crawl.` };
     }
     if (this.isDirectVideoUrl(url)) return { type: "direct_playable_url", url };
     if (this.isAddonManifest(url)) return { type: "addon_repo", url };

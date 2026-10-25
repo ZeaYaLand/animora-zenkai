@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="ru">
   <head>
     <meta charset="utf-8">
     <base href="/">
@@ -8,16 +8,16 @@
     <meta name="theme-color" content="#0D1B2A">
     <!-- Vercel Web Analytics -->
     <script defer src="https://cdn.vercel-insights.com/v1/script.js"></script>
-    <title>ZenkaiTV — Anime Online en HD</title>
-    <meta name="description" content="ZenkaiTV — watch anime online in HD. Stream the latest episodes, seasonal simulcasts, and full series, optimized for TV, desktop, and mobile.">
-    <meta property="og:title" content="ZenkaiTV — Anime Online en HD">
-    <meta property="og:description" content="Watch anime online in HD. Latest episodes, seasonal simulcasts, and full series — optimized for TV, desktop, and mobile.">
+    <title>ANIMORA — каталог и просмотр аниме</title>
+    <meta name="description" content="ANIMORA — каталог аниме, сезоны и серии, поиск, избранное и просмотр на телефоне, компьютере и телевизоре.">
+    <meta property="og:title" content="ANIMORA — аниме на русском">
+    <meta property="og:description" content="Каталог аниме, последние серии и подборки сезонов для телефона, компьютера и телевизора.">
     <meta property="og:type" content="website">
     <meta name="twitter:card" content="summary_large_image">
-    <link rel="icon" type="image/webp" href="logo-round-192.webp?v=1024">
-    <link rel="shortcut icon" href="logo-round-192.webp?v=1024">
-    <link rel="apple-touch-icon" href="logo-round-192.png?v=1024">
-    <link rel="manifest" href="/manifest.webmanifest?v=1024">
+    <link rel="icon" type="image/webp" href="/animora-logo.svg?v=1026">
+    <link rel="shortcut icon" href="/animora-logo.svg?v=1026">
+    <link rel="apple-touch-icon" href="/animora-logo.svg?v=1026">
+    <link rel="manifest" href="/manifest.webmanifest?v=1026">
     <!-- Only graphql.anilist.co is hit directly by the browser (trailers/extras).
          Jikan + s4 poster images go through the same-origin /api proxy, so
          preconnecting them is wasted. crossorigin matches the CORS GraphQL fetch. -->
@@ -33,7 +33,7 @@
     <style>
       :root{color-scheme:dark;--bg:#070914;--panel:#111522;--text:#f7f8ff;--muted:#aeb6c8;--accent:#8a55ff;--cyan:#00d2ff}
       *{box-sizing:border-box}html,body{margin:0;min-height:100%;background:#070914;color:#f7f8ff;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}body{overflow-x:hidden}.app-loader{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;align-content:center;gap:.8rem;background:#070914}.loader-mark{width:5rem;height:5rem;border-radius:1.45rem;overflow:hidden;background:#0d1b2a;box-shadow:0 0 2rem rgba(0,210,255,.25)}.loader-logo{display:block;width:100%;height:100%;object-fit:cover}.app-shell{display:flex;flex-direction:column;min-height:100vh;min-height:100dvh;padding-left:5.9rem;background:linear-gradient(180deg,rgba(8,10,19,0) 0%,rgba(8,10,19,.5) 66%,#050710 100%)}.topbar{position:fixed;inset:0 auto 0 0;z-index:80;width:5.9rem;background:rgba(8,11,22,.92);display:flex;flex-direction:column;align-items:center;padding:1.2rem .55rem;gap:1rem}.brand{display:flex;align-items:center;color:inherit;text-decoration:none}.brand-mark{display:grid;place-items:center;width:4.1rem;height:4.1rem;border-radius:1.1rem;overflow:hidden;background:#0d1b2a}.brand-logo{width:100%;height:100%;object-fit:cover}.brand-copy,.nav-link span+*,.topbar .search-box,.sidebar-toggle{display:none}.search-box{position:relative;display:block;width:100%}.stremio-search{display:block;max-width:min(54rem,100%);position:relative;z-index:9;margin:2.7rem 0 1.2rem}.stremio-search input{width:100%;min-height:4rem;border:0;border-radius:1rem;background:rgba(7,9,19,.62);color:#f7f8ff;padding:0 3.3rem 0 1.25rem}.search-box span:last-child{position:absolute;right:1.2rem;top:50%;transform:translateY(-50%);color:#8b84a6}main{min-width:0;padding:1.2rem clamp(1.4rem,3.2vw,3.4rem) 1.2rem}.hero{min-height:min(82vh,56.25vw);background:#070914}.carousel-stage{position:relative;display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:1fr;align-items:start;min-height:min(82vh,56.25vw);overflow:hidden;padding:clamp(1rem,2.4vw,2.4rem) clamp(1.6rem,5vw,5.5rem) 6.2rem}.carousel-backdrop,.carousel-backdrop-image{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:linear-gradient(135deg,#121733,#1b1a3b 38%,#0b2637);filter:none;transform:none}.carousel-info{position:relative;z-index:3;display:grid;align-self:center;grid-template-rows:auto auto auto auto auto;gap:.85rem;max-width:min(46rem,62vw);padding:0}.carousel-info h2{margin:0;padding-bottom:.18rem;font-size:clamp(1.55rem,3.1vw,3.1rem);line-height:1;letter-spacing:0;display:-webkit-box;overflow:hidden;overflow-wrap:anywhere;-webkit-line-clamp:2;-webkit-box-orient:vertical}.carousel-info p{margin:0;color:#c7cede;font-weight:700}.carousel-info p:not(.eyebrow){display:-webkit-box;max-width:40rem;overflow:hidden;-webkit-line-clamp:2;-webkit-box-orient:vertical}.eyebrow{color:#8a55ff!important;text-transform:uppercase}.play-action{margin-top:.25rem;min-height:3.4rem;border:0;border-radius:1rem;background:#8a55ff;color:white;font-weight:900;padding:0 1.4rem}.content-band{padding:clamp(1rem,2vw,1.75rem) 0 2.4rem}.rail-shell{display:grid;grid-template-columns:3rem minmax(0,1fr) 3rem;align-items:center;gap:.7rem}.poster-grid{--rail-gap:clamp(.65rem,1vw,.95rem);display:grid;grid-auto-flow:column;grid-auto-columns:calc((100% - (6 * var(--rail-gap))) / 7);grid-template-rows:repeat(2,auto);gap:var(--rail-gap);overflow-x:auto;overflow-y:visible;padding:.25rem .35rem 1rem;scrollbar-width:none}.show-card{display:grid;gap:.7rem;align-content:start;text-decoration:none;color:inherit}.thumb-art{display:grid;place-items:center;aspect-ratio:2/3;overflow:hidden;border-radius:.8rem;background:linear-gradient(135deg,#00d2ff,#251d47)}.thumb-poster{width:100%;height:100%;object-fit:cover;object-position:center top}
-      .app-loader{gap:.72rem;background:radial-gradient(circle at 50% 48%,rgba(138,92,255,.13),transparent 19rem),#070914}.loader-mark{width:5.35rem;height:5.35rem;background:linear-gradient(155deg,#17182a,#0b0d17 72%);box-shadow:0 1.2rem 2.8rem rgba(0,0,0,.45),0 0 2.4rem rgba(138,92,255,.18)}.thumb-art{position:relative;background:#0d0f19}.thumb-art::before{content:"Z";position:absolute;inset:0;display:grid;place-items:center;color:rgba(235,232,255,.14);font-size:2.6rem;font-weight:950;background:radial-gradient(circle at 50% 43%,rgba(138,92,255,.13),transparent 34%),linear-gradient(155deg,#171827,#0a0b13 72%)}.thumb-poster{position:relative;z-index:2;opacity:1}
+      .app-loader{gap:.72rem;background:radial-gradient(circle at 50% 48%,rgba(138,92,255,.13),transparent 19rem),#070914}.loader-mark{width:5.35rem;height:5.35rem;background:linear-gradient(155deg,#17182a,#0b0d17 72%);box-shadow:0 1.2rem 2.8rem rgba(0,0,0,.45),0 0 2.4rem rgba(138,92,255,.18)}.thumb-art{position:relative;background:#0d0f19}.thumb-art::before{content:"A";position:absolute;inset:0;display:grid;place-items:center;color:rgba(235,232,255,.14);font-size:2.6rem;font-weight:950;background:radial-gradient(circle at 50% 43%,rgba(138,92,255,.13),transparent 34%),linear-gradient(155deg,#171827,#0a0b13 72%)}.thumb-poster{position:relative;z-index:2;opacity:1}
       /* Critical visibility: must apply before the async stylesheet loads,
          otherwise every non-home route shows the home sections stacked on top
          (a large empty gap) until styles.css arrives. */
@@ -67,45 +67,47 @@
          sheet arrives — on Lighthouse's throttled network that async swap was the
          root cause of CLS ≈ 0.83. The sheet is ~28 KB Brotli and immutably
          cached, so blocking on it costs little FCP while dropping CLS to ~0. -->
-    <link id="fullStylesheet" rel="stylesheet" href="styles.css?v=1024">
+    <link id="fullStylesheet" rel="stylesheet" href="styles.css?v=1026">
     <script>(function(){try{var p=localStorage.getItem("animetv-resume-positions");if(p&&p.length>2)document.documentElement.setAttribute("data-has-history","");}catch(e){}})()</script>
     <!-- Defer all JS - browser discovers them early but executes after DOM parse -->
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-    <script defer src="js/constants.js?v=1024"></script>
-    <script defer src="js/translations.js?v=1024"></script>
-    <script defer src="js/utils.js?v=1024"></script>
-    <script defer src="js/season-normalization.js?v=1024"></script>
-    <script defer src="js/normalize.js?v=1024"></script>
-    <script defer src="js/anilist-metadata.js?v=1024"></script>
-    <script defer src="js/smart-source.js?v=1024"></script>
-    <script defer src="js/image-resolver.js?v=1024"></script>
-    <script defer src="js/adult-source-adapter.js?v=1024"></script>
-    <script defer src="js/adult-mode.js?v=1024"></script>
-    <script defer src="js/adult-releases.js?v=1024"></script>
-    <script defer src="js/router.js?v=1024"></script>
-    <script defer src="js/source-classification.js?v=1024"></script>
-    <script defer src="client.js?v=1024"></script>
+    <script defer src="js/constants.js?v=1026"></script>
+    <script defer src="js/translations.js?v=1026"></script>
+    <script defer src="js/utils.js?v=1026"></script>
+    <script defer src="js/season-normalization.js?v=1026"></script>
+    <script defer src="js/normalize.js?v=1026"></script>
+    <script defer src="js/anilist-metadata.js?v=1026"></script>
+    <script defer src="js/smart-source.js?v=1026"></script>
+    <script defer src="js/image-resolver.js?v=1026"></script>
+    <script defer src="js/adult-source-adapter.js?v=1026"></script>
+    <script defer src="js/adult-mode.js?v=1026"></script>
+    <script defer src="js/adult-releases.js?v=1026"></script>
+    <script defer src="js/router.js?v=1026"></script>
+    <script defer src="js/source-classification.js?v=1026"></script>
+    <script defer src="js/player-route-bridge.js?v=1026"></script>
+    <script defer src="client.js?v=1026"></script>
+    <script defer src="js/player-v2-test-link.js?v=1026"></script>
   </head>
   <body>
     <script>(function(){var p=location.pathname.replace(/\/+$/,"")||"/";var h=(location.hash||"").replace(/^#/,"");var r=p==="/search"||p==="/browse"||/^\/(genre|year|season|studio)\//.test(p)?"library":p==="/schedule"?"schedule":p==="/releases"?"releases":p==="/favorites"?"favorites":p==="/settings"?"settings":p==="/sources"?"sources":p==="/profile"||p==="/login"?"profile":"home";var m={search:"library",browse:"library",library:"library",home:"home",schedule:"schedule",releases:"releases",favorites:"favorites",settings:"settings",sources:"sources",profile:"profile"};if(p==="/"&&m[h])r=m[h];document.body.dataset.route=r;try{if(localStorage.getItem("animetv-sidebar-collapsed")!=="false")document.body.classList.add("sidebar-collapsed")}catch(e){document.body.classList.add("sidebar-collapsed")}})()</script>
     <div class="app-loader" id="appLoader" role="status" aria-live="polite">
       <div class="loader-mark" aria-hidden="true">
-        <img class="loader-logo" src="logo-mark-128.webp?v=1024" alt="" width="128" height="128" decoding="async">
+        <img class="loader-logo" src="/animora-logo.svg?v=1026" alt="" width="128" height="128" decoding="async">
       </div>
-      <strong>ZenkaiTV</strong>
-      <small>Loading your lineup...</small>
+      <strong>ANIMORA</strong>
+      <small>Загружаем вашу подборку…</small>
     </div>
 
     <div class="app-shell">
       <header class="topbar">
-        <a class="brand focusable" href="/" data-route="home" data-nav-label="Home" aria-label="ZenkaiTV — Home">
+        <a class="brand focusable" href="/" data-route="home" data-nav-label="Home" aria-label="ANIMORA — Home">
           <span class="brand-mark" aria-hidden="true">
-            <img class="brand-logo" src="logo-mark-128.webp?v=1024" alt="" width="66" height="66" decoding="async">
+            <img class="brand-logo" src="/animora-logo.svg?v=1026" alt="" width="66" height="66" decoding="async">
             <span class="adult-mode-badge" id="adultModeBadge" hidden>+18</span>
           </span>
           <span class="brand-copy">
-            <strong>ZenkaiTV</strong>
-            <small>ANIME STREAM HUB</small>
+            <strong>ANIMORA</strong>
+            <small>ТВОЯ ВСЕЛЕННАЯ АНИМЕ</small>
           </span>
         </a>
 
@@ -145,7 +147,7 @@
         </button>
 
         <label class="search-box">
-          <span class="sr-only">Search shows</span>
+          <span class="sr-only">Поиск аниме</span>
           <input class="focusable" id="searchInput" type="search" placeholder="Search..." autocomplete="off">
           <span aria-hidden="true">⌕</span>
         </label>
@@ -157,24 +159,24 @@
             <div class="carousel-stage focusable" id="carouselStage" tabindex="0" aria-label="Open selected carousel anime">
               <div class="carousel-backdrop" id="carouselBackdrop"></div>
               <div class="carousel-backdrop-blur" id="carouselBackdropBlur" aria-hidden="true"></div>
-              <img class="carousel-backdrop-image" id="carouselBackdropImage" src="hero-backdrop-placeholder.webp?v=1024" alt="" width="960" height="540" loading="eager" fetchpriority="high" decoding="async">
+              <img class="carousel-backdrop-image" id="carouselBackdropImage" src="hero-backdrop-placeholder.webp?v=1026" alt="" width="960" height="540" loading="eager" fetchpriority="high" decoding="async">
               <div class="hero-motion" aria-hidden="true">
                 <span></span>
                 <span></span>
                 <span></span>
               </div>
               <div class="carousel-wait" aria-hidden="true">
-                <img class="carousel-wait-mark" src="logo-mark-128.webp?v=1024" alt="" width="24" height="24" decoding="async">
+                <img class="carousel-wait-mark" src="/animora-logo.svg?v=1026" alt="" width="24" height="24" decoding="async">
                 <span class="carousel-wait-track"></span>
               </div>
               <div class="carousel-info">
-                <p class="eyebrow">Featured Now</p>
-                <h2 id="carouselTitle">Loading anime...</h2>
-                <p id="carouselText">Fetching today's anime from AniList and Jikan.</p>
-                <p class="carousel-meta-line" id="carouselMeta">Loading</p>
+                <p class="eyebrow">Сейчас в центре внимания</p>
+                <h2 id="carouselTitle">Загружаем аниме…</h2>
+                <p id="carouselText">Получаем актуальные данные об аниме…</p>
+                <p class="carousel-meta-line" id="carouselMeta">Загрузка</p>
                 <button class="play-action focusable" id="carouselOpen" aria-label="Play featured anime">
                   <span class="play-icon" aria-hidden="true"></span>
-                  <span>Play</span>
+                  <span>Смотреть</span>
                 </button>
               </div>
               <div class="carousel-indicators" id="carouselIndicators" aria-label="Featured anime selector"></div>
@@ -183,7 +185,7 @@
         </section>
 
         <label class="search-box stremio-search">
-          <span class="sr-only">Search shows</span>
+          <span class="sr-only">Поиск аниме</span>
           <input class="focusable" id="searchInputTop" type="search" placeholder="Search anime, seasons, episodes..." autocomplete="off">
           <span aria-hidden="true">⌕</span>
         </label>
@@ -191,7 +193,7 @@
         <section class="content-band is-hidden" id="continueWatching" data-section="continueWatching">
           <div class="section-heading">
             <span class="continue-dot" aria-hidden="true"></span>
-            <h2>Continue Watching</h2>
+            <h2>Продолжить просмотр</h2>
             <button class="clear-continue-btn focusable" id="clearContinueBtn" type="button" aria-label="Clear regular watch history">Clear</button>
           </div>
           <div class="rail-shell">
@@ -204,7 +206,7 @@
         <section class="content-band is-hidden" id="continueWatchingAdult" data-section="continueWatchingAdult">
           <div class="section-heading">
             <span class="continue-dot adult-dot" aria-hidden="true"></span>
-            <h2>Continue Watching</h2>
+            <h2>Продолжить просмотр</h2>
             <button class="clear-continue-btn focusable" id="clearContinueBtnAdult" type="button" aria-label="Clear adult watch history">Clear</button>
           </div>
           <div class="rail-shell">
@@ -217,7 +219,7 @@
         <section class="content-band" id="latest" data-section="latest">
           <div class="section-heading">
             <span class="hot-dot" aria-hidden="true"></span>
-            <h2>Latest Episodes</h2>
+            <h2>Последние серии</h2>
           </div>
           <div class="rail-shell">
             <button class="rail-arrow rail-arrow-left focusable" data-scroll-rail="latestGrid" data-scroll-dir="-1" aria-label="Scroll latest episodes left">‹</button>
@@ -231,10 +233,10 @@
         <section class="content-band is-hidden" id="library" data-section="library">
           <div class="section-heading">
             <span class="library-dot" aria-hidden="true"></span>
-            <h2>Anime Library</h2>
+            <h2>Каталог аниме</h2>
             <button class="library-filter-toggle focusable" id="libraryFilterToggle" type="button" aria-expanded="false" aria-label="Toggle filters">
               <span class="filter-icon" aria-hidden="true">⌥</span>
-              <span>Filters</span>
+              <span>Фильтры</span>
             </button>
           </div>
           <label class="search-box library-search">
@@ -274,7 +276,7 @@
             </div>
             <div class="library-filter-controls">
               <label class="library-select-wrap">
-                <span>Type:</span>
+                <span>Тип:</span>
                 <select class="focusable" id="libraryTypeFilter">
                   <option value="all">Select</option>
                   <option value="tv">TV</option>
@@ -285,7 +287,7 @@
                 </select>
               </label>
               <label class="library-select-wrap">
-                <span>Genre:</span>
+                <span>Жанр:</span>
                 <select class="focusable" id="libraryGenreFilter">
                   <option value="all">Select</option>
                   <option value="action">Action</option>
@@ -299,7 +301,7 @@
                 </select>
               </label>
               <label class="library-select-wrap">
-                <span>Year:</span>
+                <span>Год:</span>
                 <select class="focusable" id="libraryYearFilter">
                   <option value="all">Select</option>
                   <option value="2026">2026</option>
@@ -311,7 +313,7 @@
                 </select>
               </label>
               <label class="library-select-wrap">
-                <span>Status:</span>
+                <span>Статус:</span>
                 <select class="focusable" id="libraryStatusFilter">
                   <option value="all">Select</option>
                   <option value="airing">Airing</option>
@@ -321,13 +323,13 @@
               </label>
               <button class="library-filter-reset focusable" id="libraryResetFilters" type="button" aria-label="Reset all filters">
                 <span class="reset-icon" aria-hidden="true">↺</span>
-                <span>Reset</span>
+                <span>Сбросить</span>
               </button>
             </div>
             <div class="library-filter-meta">
               <span id="libraryResultCount">0 Results</span>
               <label class="library-sort-wrap">
-                <span>Sort by:</span>
+                <span>Сортировка:</span>
                 <select class="focusable" id="librarySortFilter">
                   <option value="default">Default</option>
                   <option value="title">Title A-Z</option>
@@ -344,7 +346,7 @@
             <button class="rail-arrow rail-arrow-right focusable" data-scroll-rail="libraryGrid" data-scroll-dir="1" aria-label="Scroll anime library right">›</button>
             <div class="library-auto-loader" id="libraryAutoLoader" role="status" aria-live="polite" aria-atomic="true" hidden>
               <span class="library-auto-loader-track" aria-hidden="true"><span></span></span>
-              <span id="libraryAutoLoaderStatus">Loading titles</span>
+              <span id="libraryAutoLoaderStatus">Загружаем аниме</span>
             </div>
           </div>
         </section>
@@ -352,8 +354,8 @@
         <section class="content-band is-hidden" id="schedule" data-section="schedule">
           <header class="releases-heading schedule-page-heading">
             <div class="releases-heading-copy">
-              <span class="releases-kicker" id="scheduleKicker">Airing calendar</span>
-              <h1>Weekly Schedule</h1>
+              <span class="releases-kicker" id="scheduleKicker">Календарь выхода</span>
+              <h1>Расписание на неделю</h1>
             </div>
           </header>
           <nav class="releases-months schedule-days" id="scheduleDays" aria-label="Days of the week"></nav>
@@ -369,22 +371,22 @@
         <section class="content-band is-hidden" id="favorites" data-section="favorites">
           <div class="section-heading">
             <span class="favorite-dot" aria-hidden="true"></span>
-            <h2>Favorites</h2>
+            <h2>Избранное</h2>
           </div>
           <div class="rail-shell">
             <button class="rail-arrow rail-arrow-left focusable" data-scroll-rail="favoritesGrid" data-scroll-dir="-1" aria-label="Scroll favorites left">‹</button>
             <div class="poster-grid" id="favoritesGrid"></div>
             <button class="rail-arrow rail-arrow-right focusable" data-scroll-rail="favoritesGrid" data-scroll-dir="1" aria-label="Scroll favorites right">›</button>
           </div>
-          <p class="empty-state" id="emptyFavorites">Open a title and press Favorite to keep it here.</p>
+          <p class="empty-state" id="emptyFavorites">Откройте аниме и нажмите «В избранное», чтобы сохранить его здесь.</p>
         </section>
 
         <section class="content-band is-hidden" id="sources" data-section="sources">
           <div class="section-heading">
             <span class="source-dot" aria-hidden="true"></span>
-            <h2>Sources & Addons</h2>
+            <h2>Источники и дополнения</h2>
           </div>
-          <p class="empty-state" id="sourceSummary">Add local or online catalog endpoints that return normalized anime JSON.</p>
+          <p class="empty-state" id="sourceSummary">Добавьте локальные или сетевые источники каталога аниме.</p>
           <div class="source-list" id="sourcesGrid"></div>
         </section>
 
@@ -393,9 +395,9 @@
             <span class="settings-page-icon" aria-hidden="true">⚙</span>
             <div>
               <div class="section-heading">
-                <h2>Settings</h2>
+                <h2>Настройки</h2>
               </div>
-              <p class="empty-state" id="settingsSummary">Change language, playback defaults, and TV layout preferences.</p>
+              <p class="empty-state" id="settingsSummary">Настройте язык интерфейса, воспроизведение и внешний вид.</p>
             </div>
           </header>
           <div class="settings-grid" id="settingsGrid"></div>
@@ -404,31 +406,31 @@
         <section class="content-band is-hidden" id="profile" data-section="profile">
           <div class="section-heading">
             <span class="library-dot" aria-hidden="true" style="background:var(--accent);"></span>
-            <h2>User Profile</h2>
+            <h2>Профиль пользователя</h2>
           </div>
           <div class="profile-card">
             <div class="profile-info-row">
               <img class="profile-avatar-large" id="profileAvatarLarge" src="https://api.dicebear.com/7.x/adventurer/svg?seed=guest" alt="User Avatar" width="72" height="72" loading="lazy" decoding="async">
               <div>
                 <h3 id="profileEmail">user@example.com</h3>
-                <p class="profile-joined">Authenticated User</p>
+                <p class="profile-joined">Авторизованный пользователь</p>
               </div>
             </div>
             <div class="profile-actions-grid">
-              <button class="profile-action-btn logout-btn focusable" id="profileLogoutBtn" type="button">Logout</button>
+              <button class="profile-action-btn logout-btn focusable" id="profileLogoutBtn" type="button">Выйти</button>
             </div>
           </div>
         </section>
       </main>
 
-      <footer class="bottom-bar" aria-label="ZenkaiTV footer">
+      <footer class="bottom-bar" aria-label="ANIMORA footer">
         <div class="footer-brand">
-          <img class="footer-wordmark" src="logo-wordmark-480.webp?v=1024" alt="ZenkaiTV" width="240" height="74" loading="lazy" decoding="async">
-          <p class="footer-tagline">Your anime universe — organized, ad-free, always on.</p>
+          <img class="footer-wordmark" src="logo-wordmark-480.webp?v=1026" alt="ANIMORA" width="240" height="74" loading="lazy" decoding="async">
+          <p class="footer-tagline">Твоя вселенная аниме — всё в одном месте.</p>
           <div class="footer-meta">
-            <span class="footer-status">Catalogs refresh daily</span>
+            <span class="footer-status">Каталог обновляется ежедневно</span>
             <span class="footer-dot" aria-hidden="true"></span>
-            <span class="footer-credit">Metadata by AniList &amp; Jikan</span>
+            <span class="footer-credit">Данные: AniList и Jikan</span>
           </div>
         </div>
       </footer>
@@ -436,20 +438,20 @@
 
     <aside class="install-recommendation" id="installRecommendation" aria-labelledby="installRecommendationTitle" aria-live="polite" hidden>
       <span class="install-recommendation-accent" aria-hidden="true"></span>
-      <img class="install-recommendation-logo" src="logo-mark-128.webp?v=1024" alt="" width="52" height="52" decoding="async">
+      <img class="install-recommendation-logo" src="/animora-logo.svg?v=1026" alt="" width="52" height="52" decoding="async">
       <div class="install-recommendation-copy">
-        <span class="install-recommendation-kicker" id="installRecommendationKicker">ZENKAITV APP</span>
-        <strong id="installRecommendationTitle">Install ZenkaiTV</strong>
-        <small id="installRecommendationMessage">Open it faster from your home screen.</small>
-        <button class="install-recommendation-never focusable" id="installRecommendationNever" type="button">Do not show again</button>
+        <span class="install-recommendation-kicker" id="installRecommendationKicker">ANIMORA APP</span>
+        <strong id="installRecommendationTitle">Установить ANIMORA</strong>
+        <small id="installRecommendationMessage">Открывайте сайт быстрее с главного экрана.</small>
+        <button class="install-recommendation-never focusable" id="installRecommendationNever" type="button">Больше не показывать</button>
       </div>
-      <button class="install-recommendation-action focusable" id="installRecommendationAction" type="button" aria-label="Install ZenkaiTV">
+      <button class="install-recommendation-action focusable" id="installRecommendationAction" type="button" aria-label="Install ANIMORA">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M12 3v11"></path>
           <path d="m8 10 4 4 4-4"></path>
           <path d="M5 19h14"></path>
         </svg>
-        <span id="installRecommendationActionText">Install</span>
+        <span id="installRecommendationActionText">Установить</span>
       </button>
       <button class="install-recommendation-close focusable" id="installRecommendationClose" type="button" aria-label="Dismiss install recommendation" title="Dismiss">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true">
@@ -457,18 +459,18 @@
           <path d="m18 6-12 12"></path>
         </svg>
       </button>
-      <p class="install-recommendation-hint" id="installRecommendationHint" hidden>In Safari, tap Share, then Add to Home Screen.</p>
+      <p class="install-recommendation-hint" id="installRecommendationHint" hidden>В Safari нажмите «Поделиться», затем «На экран Домой».</p>
     </aside>
 
     <div class="watch-overlay" id="watchOverlay" hidden>
       <div class="watch-detail-progress" id="watchDetailProgress" role="status" aria-live="polite" hidden>
         <span aria-hidden="true"></span>
-        <span class="sr-only">Loading anime details</span>
+        <span class="sr-only">Загрузка информации об аниме</span>
       </div>
       <div class="watch-backdrop-blur" id="watchBackdropBlur" aria-hidden="true"></div>
       <div class="watch-backdrop" id="watchBackdrop" aria-hidden="true"></div>
       <div class="watch-backdrop-title-art" id="watchBackdropTitleArt" aria-hidden="true" hidden>
-        <span class="watch-backdrop-title-kicker">ZenkaiTV</span>
+        <span class="watch-backdrop-title-kicker">ANIMORA</span>
         <strong id="watchBackdropTitleText"></strong>
         <span class="watch-backdrop-title-rule"></span>
         <span class="art-sheen"></span>
@@ -486,7 +488,7 @@
             <div class="watch-taglist" id="watchGenres" aria-label="Genres"></div>
             <div class="watch-taglist watch-castlist" id="watchCast" aria-label="Cast" hidden></div>
             <p class="watch-summary focusable" id="watchDescription" tabindex="0"></p>
-            <button class="watch-summary-toggle focusable" id="watchDescriptionToggle" type="button" aria-controls="watchDescription" aria-expanded="false" hidden>See more</button>
+            <button class="watch-summary-toggle focusable" id="watchDescriptionToggle" type="button" aria-controls="watchDescription" aria-expanded="false" hidden>Подробнее</button>
             <p class="eyebrow" id="watchMeta" hidden>Episode</p>
             <div class="watch-actions">
               <button class="primary-action focusable" id="fakePlay" aria-label="Play selected anime">Play</button>
@@ -556,7 +558,7 @@
         Login View:
         <div class="auth-view" id="loginView">
           <h2>Welcome Back</h2>
-          <p>Login to ZenkaiTV to sync your progress &amp; favorites</p>
+          <p>Login to ANIMORA to sync your progress &amp; favorites</p>
           <form class="auth-form" id="loginForm" novalidate>
             <div class="form-group">
               <label for="loginEmail">Email</label>
@@ -592,7 +594,7 @@
         Signup View:
         <div class="auth-view" id="signupView" hidden>
           <h2>Create Account</h2>
-          <p>Join ZenkaiTV to sync your watch history</p>
+          <p>Join ANIMORA to sync your watch history</p>
           <form class="auth-form" id="signupForm" novalidate>
             <div class="form-group">
               <label for="signupEmail">Email</label>

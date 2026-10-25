@@ -15,6 +15,7 @@ const files = [
   "styles.css",
   "update-manager.js",
   "manifest.webmanifest",
+  "animora-logo.svg",
   "homepage-bootstrap.json",
   "sources.json",
   "logo-mark.png",
@@ -112,7 +113,7 @@ async function buildStatic() {
   // Reuse only complete, unchanged output so the API hook cannot rebuild dist.
   if (process.argv.includes("--if-needed") && outDirs.every((directory) =>
     canReuseStaticBuild(directory, inputsSha256, assetFiles))) {
-    console.log("ZenkaiTV static build already verified; reusing dist and public");
+    console.log("ANIMORA static build already verified; reusing dist and public");
     return;
   }
   for (const outDir of outDirs) {
@@ -137,7 +138,7 @@ async function buildStatic() {
     writeBuildManifest(outDir, inputsSha256);
   }
 
-  console.log(`\nZenkaiTV static build ready in ${outDirs.join(" and ")}`);
+  console.log(`\nANIMORA static build ready in ${outDirs.join(" and ")}`);
 }
 
 if (process.argv[1] && fileURLToPath(import.meta.url) === resolve(process.argv[1])) {
