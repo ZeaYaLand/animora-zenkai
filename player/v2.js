@@ -191,7 +191,7 @@ async function animeGoSources(id){
      const provider=String(item.provider||"AnimeGO");
      const label=String(item.label||"Русская озвучка").trim();
      if(/субтитр|subtitles?\b|\bsub\b|\(sub\)/i.test(label))continue;
-     const normalized=source({url:embed,kind:"iframe",label:"AnimeGO · "+label+" · "+provider,provider,language:"ru"},0,"AnimeGO");
+     const isKodik=/kodik/i.test(provider+" "+embed);\n     const normalized=source({url:embed,kind:"iframe",label:(isKodik?"Kodik · ":"AnimeGO · ")+label+(isKodik?"":" · "+provider),provider:isKodik?"Kodik":provider,language:"ru"},0,isKodik?"Kodik":"AnimeGO");
      if(normalized)out.push(normalized);
     }
    }
@@ -210,7 +210,7 @@ async function apiSources(){
   deadline(animeVostSources(id),12000),
   deadline(animeGoSources(id),12000)
  ]);
- return dedupe(groups.flat());
+ const all=dedupe(groups.flat());\n // Prefer Kodik embeds when AnimeGO exposes them, without dropping other Russian fallbacks.\n return all.sort((a,b)=>Number(/kodik/i.test(b.provider+" "+b.url))-Number(/kodik/i.test(a.provider+" "+a.url)));
 }
 function loading(text,title){$("loading").hidden=false;$("error").hidden=true;$("loadingText").textContent=text||"Проверяем доступность видео";$("loadingTitle").textContent=title||"Подключаем источник…"}
 function error(text){$("loading").hidden=true;$("error").hidden=false;$("errorText").textContent=text}
