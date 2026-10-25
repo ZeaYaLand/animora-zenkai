@@ -191,7 +191,8 @@ async function animeGoSources(id){
      const provider=String(item.provider||"AnimeGO");
      const label=String(item.label||"Русская озвучка").trim();
      if(/субтитр|subtitles?\b|\bsub\b|\(sub\)/i.test(label))continue;
-     const isKodik=/kodik/i.test(provider+" "+embed);\n     const normalized=source({url:embed,kind:"iframe",label:(isKodik?"Kodik · ":"AnimeGO · ")+label+(isKodik?"":" · "+provider),provider:isKodik?"Kodik":provider,language:"ru"},0,isKodik?"Kodik":"AnimeGO");
+     const isKodik=/kodik/i.test(provider+" "+embed);
+     const normalized=source({url:embed,kind:"iframe",label:(isKodik?"Kodik · ":"AnimeGO · ")+label+(isKodik?"":" · "+provider),provider:isKodik?"Kodik":provider,language:"ru"},0,isKodik?"Kodik":"AnimeGO");
      if(normalized)out.push(normalized);
     }
    }
